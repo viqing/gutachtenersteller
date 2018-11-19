@@ -54,4 +54,15 @@ class texWriter:
 
     def writeMOTablePage(self, f, mo_dict):
         pass
-	
+    def writeHOTablePage(f, mo_dict):
+        pass
+    def writeHOMacroPage(f, 'path_to_macro_HO.jpg'):
+        pass
+    def writeHOMikroPage(f, 'path_to_mikro_HO.jpg'):
+        pass
+    def writeCompareGraph(f, mo_dict, vo_dict):
+        pass
+    def writeCompareTable(f, mo_dict, vo_dict):
+        pass # if more than 5 VO exist
+    def writeVOMacroPage(f, mo_dict, vo_dict):
+        pass

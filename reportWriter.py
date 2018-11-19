@@ -16,12 +16,21 @@ def writeReport():
     mo_dict['d_rooms'] = '4.0'
     mo_dict['d_size'] = 'Langstrasse 1234'
     mo_dict['d_year'] = 'Langstrasse 1234'
-    print(mo_dict)
+
+    vo_dict = {}
 
     f = open('py2texTest2.tex', 'w')
     writer = texWriter()
     writer.setupTexFilePackages(f)
     writer.writeTitlePage(f, mo_str='Langstrasse 123', mo_plz='8004', mo_rooms='4.0', mo_city='Zürich')
+    writer.writeHOTablePage(f, mo_dict)
+    writer.writeHOMacroPage(f, 'path_to_macro_HO.jpg')
+    writer.writeHOMikroPage(f, 'path_to_mikro_HO.jpg')
+    writer.writeCompareGraph(f, mo_dict, vo_dict)
+    writer.writeCompareTable(f, mo_dict, vo_dict)
+    writer.writeCompareTable(f, mo_dict, vo_dict) # if more than 5 VO exist
+    writer.writeVOMacroPage(f, mo_dict, vo_dict)
+
 
 if __name__=="__main__":
     writeReport()
