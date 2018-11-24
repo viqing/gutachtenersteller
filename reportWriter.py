@@ -24,9 +24,7 @@ def writeReport():
     mo_dict['year'] = '1971'
 
     vo_dicts = createDictForObjects()
-
     
-
     f = open('py2texTest2.tex', 'w')
     writer = texWriter()
     #import necessary packages into the tex file
@@ -58,8 +56,10 @@ def writeReport():
         search_string = search_string.replace('ä','ae')
         search_string = search_string.replace('ü','ue')
         search_string = search_string.replace('ö','oe')
+        search_string = search_string.replace('è', 'e')
         search_string = search_string.replace(' ','+')
         writer.writeVOMacroPage(f, mo_dict, vo_dict, createStaticMap.createStaticVOMakroMap(address2=search_string, exportPath=vo_key))
+        #writer.writeVOMicroPage()
 
     writer.endDocument(f)
 
