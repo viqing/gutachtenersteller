@@ -17,6 +17,7 @@ class texWriter:
         f.write(r'\usepackage{fancyhdr}' + '\n')
         f.write(r'\usepackage[german]{babel}' + '\n')
         f.write(r'\usepackage{caption}' + '\n\n')
+        f.write(r'\usepackage{pgfplots}' + '\n')
 
         f.write(r'\newcommand\YUGE{\fontsize{100}{120}\selectfont}' + '\n\n')
 
@@ -145,8 +146,60 @@ class texWriter:
         f.write(r'\end{minipage}' + '\n')
         f.write(r'\end{figure}' + '\n')
 
-    def writeCompareGraph(self, f, mo_dict, vo_dict):
-        pass
+    def writeCompareGraph(self, f, mo_dict, vo_dicts):
+        f.write(r'\clearpage' + '\n')
+        f.write(r'\section{Übersicht der Mietzinsen}' + '\n')
+        
+        f.write(r'\pgfplotstableread[row sep=\\,col sep=&]{' + '\n')
+        f.write(r'street  & br_mo \\' + '\n')
+        f.write(mo_dict['street'] + '&' + mo_dict['br_mo'] + '\\' + '\n')
+        for vo_dict in vo_dicts.values():
+            f.write(vo_dict['street'] + '&' + vo_dict['br_mo'] + '\\' + '\n')
+        f.write(r')}\mydatabla' + '\n')
+        f.write(r'\begin{tikzpicture}'+ '\n')
+        f.write(r'.\begin{axis}['+ '\n')
+        f.write(r'ybar,' + '\n')
+        f.write(r'title={\textbf{Bruttomietzins pro Monat in CHF}},' + '\n')
+        f.write(r'ymajorgrids=true,' + '\n')
+        f.write(r'width=0.9\textwidth,' + '\n')
+        f.write(r'height=.41\textwidth,' + '\n')
+        f.write(r'legend style={at={(0.5,1)},' + '\n')
+        f.write(r'anchor=north,legend columns=-1},' + '\n') 
+        f.write(r'symbolic x coords={' + mo_dict['street'] + ',')
+        for vo_dict in vo_dicts.values():
+            f.write(vo_dict['street'] + ',')
+        f.write(r'},' + '\n')
+        f.write(r'x tick label style={rotate=45, anchor=east, align=left},' + '\n')
+        f.write(r'xtick=data,' + '\n')
+        f.write(r'nodes near coords align={vertical},' + '\n')
+        average = 0
+        maximum  = 0
+        sum = 0
+        for vo_dict in vo_dicts.values():
+            sum = sum + float(vo_dict['br_mo'])
+            if float(vo_dict['br_mo']) > maximum:
+                maximum = float(vo_dict['br_mo'])
+
+        average = sum/len(vo_dicts)
+        missbrauch = 1.2*average
+        
+        f.write(r'ymin=0,ymax=' + str(max(missbrauch, maximum)+500) + ',' + '\n')
+        f.write(r']' + '\n')
+        f.write(r'\addplot[nodes near coords, fill=blue!40] table[x=interval,y=carT]{\mydatabla};' + '\n')
+        f.write(r'		\addplot[smooth, ultra thick, red]' + '\n')
+        f.write(r'coordinates {(' + mo_dict['street'] + ',' + str(missbrauch) + ')')
+        for vo_dict in vo_dicts.values():
+            f.write('('+ vo_dict['street'] + ',' + str(missbrauch) + ')')
+        f.write(r'};' + '\n')    
+
+        f.write(r'\addplot[smooth, ultra thick]' + '\n')
+
+        f.write(r'coordinates {(' + mo_dict['street'] + ',' + str(average) + ')')
+        for vo_dict in vo_dicts.values():
+            f.write('('+ vo_dict['street'] + ',' + str(average) + ')')
+        f.write(r'};' + '\n')
+        f.write(r'\end{axis}' + '\n') 
+        f.write(r'\end{tikzpicture}' + '\n') 
 
     def writeCompareTable(self, f, mo_dict, vo_dicts, currentBinIndex, maxBinIndex):
         f.write(r'\clearpage' + '\n')

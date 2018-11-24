@@ -58,6 +58,9 @@ def writeReport():
         search_string = search_string.replace('ä','ae')
         search_string = search_string.replace('ü','ue')
         search_string = search_string.replace('ö','oe')
+        search_string = search_string.replace('è','e')
+        search_string = search_string.replace('é','e')
+        search_string = search_string.replace('Ă¨','e')
         search_string = search_string.replace(' ','+')
         writer.writeVOMacroPage(f, mo_dict, vo_dict, createStaticMap.createStaticVOMakroMap(address2=search_string, exportPath=vo_key))
 
