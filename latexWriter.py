@@ -62,7 +62,7 @@ class texWriter:
         f.write(r'\begin{flushleft}' + '\n')
         f.write(r'\renewcommand{\arraystretch}{1.1}' + '\n')
         f.write(r'\setlength{\tabcolsep}{10pt}' + '\n')
-        f.write(r'\begin{tabular}{ |l|l| } ' + '\n')
+        f.write(r'\begin{tabular}{ |p{\dimexpr 0.18\linewidth-2\tabcolsep}|p{\dimexpr 0.15\linewidth-2\tabcolsep}| } ' + '\n')
         f.write(r'\hline' + '\n')
         f.write(r'Adresse & \cellcolor{lightgray}' + mo_dict['street'] + r'\\' + '\n')
         f.write(r'\hline' + '\n')
@@ -210,7 +210,7 @@ class texWriter:
         f.write(r'\renewcommand{\arraystretch}{1.1}' + '\n')
         f.write(r'\setlength{\tabcolsep}{10pt}' + '\n')
         printStringList = [None] * 48
-        printStringList[0] =r'\begin{tabular}{ |l|l|'
+        printStringList[0] =r'\begin{tabular}{ | p{\dimexpr 0.172\linewidth-2\tabcolsep} | p{\dimexpr 0.138\linewidth-2\tabcolsep} |'
         printStringList[1] =r'\hline' + '\n'
         printStringList[2] =r'Adresse & \cellcolor{lightgray} ' + mo_dict['street']
         printStringList[3] =r'\hline' + '\n'
@@ -260,7 +260,7 @@ class texWriter:
         printStringList[47] =r'\hline' + '\n'
 
         for vo_dict in vo_dicts.values():
-            printStringList[0] = ''.join((printStringList[0], 'l|'))
+            printStringList[0] = ''.join((printStringList[0], r'p{\dimexpr 0.138\linewidth-2\tabcolsep} |'))
             printStringList[2] = ''.join((printStringList[2],' & ',vo_dict['street']))
             printStringList[4] = ''.join((printStringList[4],' & '))
             printStringList[6] = ''.join((printStringList[6],' & ',vo_dict['net_mo']))
