@@ -147,8 +147,123 @@ class texWriter:
 
     def writeCompareGraph(self, f, mo_dict, vo_dict):
         pass
-    def writeCompareTable(self, f, mo_dict, vo_dict):
-        pass # if more than 5 VO exist
+
+    def writeCompareTable(self, f, mo_dict, vo_dicts, currentBinIndex, maxBinIndex):
+        f.write(r'\clearpage' + '\n')
+        f.write(r'\section{Vergleich der Mietobjekte (' + str(currentBinIndex) + '/' + str(maxBinIndex) + ')}' + '\n')
+        f.write(r'\begin{table}[!htbp]' + '\n')
+        f.write(r'\begin{flushleft}' + '\n')
+        f.write(r'\renewcommand{\arraystretch}{1.1}' + '\n')
+        f.write(r'\setlength{\tabcolsep}{10pt}' + '\n')
+        printStringList = [None] * 48
+        printStringList[0] = r'\begin{tabular}{ |l|l|'
+        printStringList[1] =r'\hline' + '\n'
+        printStringList[2] =r'Adresse & \cellcolor{lightgray} ' + mo_dict['street']
+        printStringList[3] =r'\hline' + '\n'
+        printStringList[4] =r'\rowcolor{gray} Monatspreis & '
+        printStringList[5] =r'\hline' + '\n'
+        printStringList[6] =r'Nettomietzins & \cellcolor{lightgray} ' + mo_dict['net_mo']
+        printStringList[7] =r'\hline' + '\n'
+        printStringList[8] =r'Nebenkosten & \cellcolor{lightgray} ' + mo_dict['ext_mo']
+        printStringList[9] =r'\hline' + '\n'
+        printStringList[10] =r'Bruttomietzins & \cellcolor{lightgray} ' + mo_dict['br_mo']
+        printStringList[11] =r'\hline' + '\n'
+        printStringList[12] =r'Mietzins/m2 p.a. & \cellcolor{lightgray} ' + mo_dict['m2_pa']
+        printStringList[13] =r'\hline' + '\n'
+        printStringList[14] =r'\rowcolor{gray} Lage \& Distanzen & '
+        printStringList[15] =r'\hline' + '\n'
+        printStringList[16] =r'Historisch/Administrativ & \cellcolor{lightgray} ' + mo_dict['plz_city']
+        printStringList[17] =r'\hline' + '\n'
+        printStringList[18] =r'Schule & \cellcolor{lightgray} ' + mo_dict['d_school']
+        printStringList[19] =r'\hline' + '\n'
+        printStringList[20] =r'Einkaufsmöglichkeiten & \cellcolor{lightgray} ' + mo_dict['d_shop']
+        printStringList[21] =r'\hline' + '\n'
+        printStringList[22] =r'Naherholung & \cellcolor{lightgray} ' + mo_dict['d_fun']
+        printStringList[23] =r'\hline' + '\n'
+        printStringList[24] =r'ÖV & \cellcolor{lightgray} ' + mo_dict['d_public']
+        printStringList[25] =r'\hline' + '\n'
+        printStringList[26] =r'\rowcolor{gray} Grösse & '
+        printStringList[27] =r'\hline' + '\n'
+        printStringList[28] =r'Zimmerzahl p.a. & \cellcolor{lightgray} ' + mo_dict['rooms']
+        printStringList[29] =r'\hline' + '\n'
+        printStringList[30] =r'Fläche ($m^2$) & \cellcolor{lightgray} ' + mo_dict['size']
+        printStringList[31] =r'\hline' + '\n'
+        printStringList[32] =r'\rowcolor{gray} Ausstattung & '
+        printStringList[33] =r'\hline' + '\n'
+        printStringList[34] =r'Anzahl Nasszellen & \cellcolor{lightgray} ' + mo_dict['bath']
+        printStringList[35] =r'\hline' + '\n'
+        printStringList[36] =r'Küche & \cellcolor{lightgray} ' + mo_dict['kitchen']
+        printStringList[37] =r'\hline' + '\n'
+        printStringList[38] =r'Balkon & \cellcolor{lightgray} ' + mo_dict['balkon']
+        printStringList[39] =r'\hline' + '\n'
+        printStringList[40] =r'Lift & \cellcolor{lightgray} ' + mo_dict['lift']
+        printStringList[41] =r'\hline' + '\n'
+        printStringList[42] =r'Stockwerk & \cellcolor{lightgray} ' + mo_dict['floor']
+        printStringList[43] =r'\hline' + '\n'
+        printStringList[44] =r'\rowcolor{gray} Baujahr & '
+        printStringList[45] =r'\hline' + '\n'
+        printStringList[46] =r'Baujahr & \cellcolor{lightgray} ' + mo_dict['year']
+        printStringList[47] =r'\hline' + '\n'
+
+        for vo_dict in vo_dicts.values():
+            printStringList[0] = ''.join((printStringList[0], 'l|'))
+            printStringList[2] = ''.join((printStringList[2],' & ',vo_dict['street']))
+            printStringList[4] = ''.join((printStringList[4],' & '))
+            printStringList[6] = ''.join((printStringList[6],' & ',vo_dict['net_mo']))
+            printStringList[8] = ''.join((printStringList[8],' & ',vo_dict['ext_mo']))
+            printStringList[10] = ''.join((printStringList[10],' & ', vo_dict['br_mo']))
+            printStringList[12] = ''.join((printStringList[12],' & ', vo_dict['m2_pa']))
+            printStringList[14] = ''.join((printStringList[14],' & '))
+            printStringList[16] = ''.join((printStringList[16],' & ', vo_dict['plz'],', ',vo_dict['city']))
+            printStringList[18] = ''.join((printStringList[18],' & ', vo_dict['d_school']))
+            printStringList[20] = ''.join((printStringList[20],' & ', vo_dict['d_shop']))
+            printStringList[22] = ''.join((printStringList[22],' & ', vo_dict['d_fun']))
+            printStringList[24] = ''.join((printStringList[24],' & ', vo_dict['d_public']))
+            printStringList[26] = ''.join((printStringList[26],' & '))
+            printStringList[28] = ''.join((printStringList[28],' & ', vo_dict['rooms']))
+            printStringList[30] = ''.join((printStringList[30],' & ', vo_dict['size']))
+            printStringList[32] = ''.join((printStringList[32],' & '))
+            printStringList[34] = ''.join((printStringList[34],' & ', vo_dict['bath']))
+            printStringList[36] = ''.join((printStringList[36],' & ', vo_dict['kitchen']))
+            printStringList[38] = ''.join((printStringList[38],' & ', vo_dict['balkon']))
+            printStringList[40] = ''.join((printStringList[40],' & ', vo_dict['lift']))
+            printStringList[42] = ''.join((printStringList[42],' & ', vo_dict['floor']))
+            printStringList[44] = ''.join((printStringList[44],' & '))
+            printStringList[46] = ''.join((printStringList[46],' & ', vo_dict['year']))
+            
+
+        printStringList[0] = ''.join((printStringList[0],r' } ' + '\n'))
+        printStringList[2] = ''.join((printStringList[2],r'\\' + '\n'))
+        printStringList[4] = ''.join((printStringList[4],r'\\' + '\n'))
+        printStringList[6] = ''.join((printStringList[6],r'\\' + '\n'))
+        printStringList[8] = ''.join((printStringList[8],r'\\' + '\n'))
+        printStringList[10] = ''.join((printStringList[10],r'\\' + '\n'))
+        printStringList[12] = ''.join((printStringList[12],r'\\' + '\n'))
+        printStringList[14] = ''.join((printStringList[14],r'\\' + '\n'))
+        printStringList[16] = ''.join((printStringList[16],r'\\' + '\n'))
+        printStringList[18] = ''.join((printStringList[18],r'\\' + '\n'))
+        printStringList[20] = ''.join((printStringList[20],r'\\' + '\n'))
+        printStringList[22] = ''.join((printStringList[22],r'\\' + '\n'))
+        printStringList[24] = ''.join((printStringList[24],r'\\' + '\n'))
+        printStringList[26] = ''.join((printStringList[26],r'\\' + '\n'))
+        printStringList[28] = ''.join((printStringList[28],r'\\' + '\n'))
+        printStringList[30] = ''.join((printStringList[30],r'\\' + '\n'))
+        printStringList[32] = ''.join((printStringList[32],r'\\' + '\n'))
+        printStringList[34] = ''.join((printStringList[34],r'\\' + '\n'))
+        printStringList[36] = ''.join((printStringList[36],r'\\' + '\n'))
+        printStringList[38] = ''.join((printStringList[38],r'\\' + '\n'))
+        printStringList[40] = ''.join((printStringList[40],r'\\' + '\n'))
+        printStringList[42] = ''.join((printStringList[42],r'\\' + '\n'))
+        printStringList[44] = ''.join((printStringList[44],r'\\' + '\n'))
+        printStringList[46] = ''.join((printStringList[46],r'\\' + '\n'))
+
+        for list in printStringList:
+            f.write(list)
+
+        f.write(r'\end{tabular}' + '\n')
+        f.write(r'\end{flushleft}' + '\n')
+        f.write(r'\end{table}' + '\n')
+
     def writeVOMacroPage(self, f, mo_dict, vo_dict, mo_makro='img/vo-makro.png'):
         f.write(r'\clearpage' + '\n')
         f.write(r'\section{' + vo_dict['street'] + '}' + '\n')
@@ -177,7 +292,7 @@ class texWriter:
         f.write(r'\hline' + '\n')
         f.write(r'\rowcolor{gray} Lage \& Distanzen & &\\' + '\n')
         f.write(r'\hline' + '\n')
-        f.write(r'Historisch/Administrativ & \cellcolor{lightgray}' + mo_dict['plz_city'] + '&' + vo_dict['plz_city'] + r'\\' + '\n')
+        f.write(r'Historisch/Administrativ & \cellcolor{lightgray}' + mo_dict['plz_city'] + '&' + vo_dict['plz'] + ', ' + vo_dict['city'] + r'\\' + '\n')
         f.write(r'\hline' + '\n')
         f.write(r'Schule & \cellcolor{lightgray}' + mo_dict['d_school'] + '&' + vo_dict['d_school'] + r'\\' + '\n')
         f.write(r'\hline' + '\n')
@@ -213,4 +328,6 @@ class texWriter:
         f.write(r'\end{flushleft}' + '\n')
         f.write(r'\end{minipage}' + '\n')
         f.write(r'\end{figure}' + '\n')
+
+    def endDocument(self, f):
         f.write(r'\end{document}')

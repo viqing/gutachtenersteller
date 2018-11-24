@@ -23,7 +23,7 @@ def writeReport():
     mo_dict['floor'] = '4. OG'
     mo_dict['year'] = '1971'
 
-    vo_dict = createDictForObjects()
+    vo_dicts = createDictForObjects()
 
     
 
@@ -37,27 +37,31 @@ def writeReport():
     writer.writeHOMikroPage(f, createStaticMap.createStaticHOMap(zoom='18', exportedImgName='ho-mikro.jpg'))
 
     #@TODO diese Seiten müssen noch gefinisht werden
-    writer.writeCompareGraph(f, mo_dict, vo_dict)
+    writer.writeCompareGraph(f, mo_dict, vo_dicts)
     
     #
     vo_dict_5bin = {}
     bin_counter = 1
     vo_dict_5bin[str(bin_counter)] = {}
-    for i, obj in enumerate(vo_dict):
-        vo_dict_5bin[str(bin_counter)][obj] = vo_dict[obj]
-        if (i+1)%5==0:
+    for i, obj in enumerate(vo_dicts):
+        vo_dict_5bin[str(bin_counter)][obj] = vo_dicts[obj]
+        if (i+1)%5==0 and (i+1)!=len(vo_dicts):
             bin_counter += 1
+            vo_dict_5bin[str(bin_counter)] = {}
 
     #LOOP THROUGH VO_DICT_BIN TODO
-    #for 
-    #    writer.writeCompareTable(f, mo_dict, vo_dict)
+    for bin_key, bin_dict in vo_dict_5bin.items():
+        writer.writeCompareTable(f, mo_dict, bin_dict, bin_key, len(vo_dict_5bin)) 
 
-    search_string = ','.join((vo_dict['street'],vo_dict['plz_city']))
-    search_string = search_string.replace('ä','ae')
-    search_string = search_string.replace('ü','ue')
-    search_string = search_string.replace('ö','oe')
-    search_string = search_string.replace(' ','')
-    writer.writeVOMacroPage(f, mo_dict, vo_dict, createStaticMap.createStaticVOMakroMap())
+    for vo_key, vo_dict in vo_dicts.items():
+        search_string = ','.join ((vo_dict['street'], vo_dict['plz'], vo_dict['city']))
+        search_string = search_string.replace('ä','ae')
+        search_string = search_string.replace('ü','ue')
+        search_string = search_string.replace('ö','oe')
+        search_string = search_string.replace(' ','+')
+        writer.writeVOMacroPage(f, mo_dict, vo_dict, createStaticMap.createStaticVOMakroMap(address2=search_string, exportPath=vo_key))
+
+    writer.endDocument(f)
 
 def createDictForObjects(filename='output.csv'):
 
@@ -82,7 +86,7 @@ def createDictForObjects(filename='output.csv'):
         consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['br_mo'] = objectsDict['s_grossrent'][i]
         consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['net_mo'] = objectsDict['s_netrent'][i]
         consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['ext_mo'] = str(float(objectsDict['s_grossrent'][i]) - float(objectsDict['s_netrent'][i]))
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['m2_pa'] = str(12.0 * float(objectsDict['s_grossrent'][i]) / float(objectsDict['s_surface_usuable'][i]))
+        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['m2_pa'] = str(int(12.0 * float(objectsDict['s_grossrent'][i]) / float(objectsDict['s_surface_usuable'][i])))
         consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['plz'] = objectsDict['s_zip'][i]
         consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['city'] = objectsDict['s_city'][i]
         consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['d_school'] = 'tbd'
@@ -131,5 +135,5 @@ def saveVOImageLocally(VOName, imgName, imgURL):
 
 
 if __name__=="__main__":
-    #writeReport()
-    createDictForObjects()
+    writeReport()
+    #createDictForObjects()
