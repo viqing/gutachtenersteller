@@ -15,7 +15,8 @@ class texWriter:
         f.write(r'\usepackage[table]{xcolor}' + '\n')
         f.write(r'\usepackage[a4paper,landscape,left=2cm, right=2cm, top=2cm, bottom=2.5cm, includehead, includefoot]{geometry}' + '\n')
         f.write(r'\usepackage{fancyhdr}' + '\n')
-        f.write(r'\usepackage[german]{babel}' + '\n')
+        f.write(r'\usepackage[T1]{fontenc}' + '\n')
+        f.write(r'\usepackage[ngerman]{babel}' + '\n')
         f.write(r'\usepackage{caption}' + '\n\n')
         f.write(r'\usepackage{pgfplots}' + '\n')
 
@@ -154,10 +155,10 @@ class texWriter:
         f.write(r'street  & br_mo \\' + '\n')
         f.write(mo_dict['street'] + '&' + mo_dict['br_mo'] + '\\' + '\n')
         for vo_dict in vo_dicts.values():
-            f.write(vo_dict['street'] + '&' + vo_dict['br_mo'] + '\\' + '\n')
-        f.write(r')}\mydatabla' + '\n')
+            f.write(vo_dict['street'] + '&' + vo_dict['br_mo'] + r'\\' + '\n')
+        f.write(r'}\mydatabla' + '\n')
         f.write(r'\begin{tikzpicture}'+ '\n')
-        f.write(r'.\begin{axis}['+ '\n')
+        f.write(r'\begin{axis}['+ '\n')
         f.write(r'ybar,' + '\n')
         f.write(r'title={\textbf{Bruttomietzins pro Monat in CHF}},' + '\n')
         f.write(r'ymajorgrids=true,' + '\n')
@@ -316,7 +317,7 @@ class texWriter:
         f.write(r'\end{flushleft}' + '\n')
         f.write(r'\end{table}' + '\n')
 
-    def writeVOMacroPage(self, f, mo_dict, vo_dict, vo_makro='img/vo-makro.png'):
+    def writeVOMacroPage(self, f, mo_dict, vo_dict, vo_makro):
         f.write(r'\clearpage' + '\n')
         f.write(r'\section{' + vo_dict['street'] + '}' + '\n')
         f.write(r'\subsection{Übersicht der Vergleichskriterien und Analyse der Makrolage}' + '\n')
@@ -381,7 +382,7 @@ class texWriter:
         f.write(r'\end{minipage}' + '\n')
         f.write(r'\end{figure}' + '\n')
 
-    def writeVOMicroPage(self, f, mo_dict, vo_dict, vo_mikro='img/vo-makro.png'):
+    def writeVOMicroPage(self, f, mo_dict, vo_dict, vo_mikro='img\vo-makro.png'):
         f.write(r'\clearpage' + '\n')
         f.write(r'\section{' + vo_dict['street'] + '}' + '\n')
         f.write(r'\subsection{Analyse der Mikrolage}' + '\n')

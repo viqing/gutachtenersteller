@@ -56,15 +56,14 @@ def writeReport():
         search_string = search_string.replace('ä','ae')
         search_string = search_string.replace('ü','ue')
         search_string = search_string.replace('ö','oe')
-<<<<<<< HEAD
         search_string = search_string.replace('è','e')
         search_string = search_string.replace('é','e')
         search_string = search_string.replace('Ă¨','e')
-=======
-        search_string = search_string.replace('è', 'e')
->>>>>>> a262b0bd855526d9b9943a233843d26e33efed75
+        search_string = search_string.replace('Ã¨','e')
         search_string = search_string.replace(' ','+')
-        writer.writeVOMacroPage(f, mo_dict, vo_dict, createStaticMap.createStaticVOMakroMap(address2=search_string, exportPath=vo_key))
+        macroImage =  createStaticMap.createStaticVOMakroMap(address2=search_string, exportPath=vo_key)
+        print(macroImage)
+        writer.writeVOMacroPage(f, mo_dict, vo_dict, macroImage)
         #writer.writeVOMicroPage()
 
     writer.endDocument(f)
