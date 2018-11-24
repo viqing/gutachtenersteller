@@ -283,7 +283,6 @@ class texWriter:
             printStringList[42] = ''.join((printStringList[42],' & ', vo_dict['floor']))
             printStringList[44] = ''.join((printStringList[44],' & '))
             printStringList[46] = ''.join((printStringList[46],' & ', vo_dict['year']))
-            
 
         printStringList[0] = ''.join((printStringList[0],r' } ' + '\n'))
         printStringList[2] = ''.join((printStringList[2],r'\\' + '\n'))
@@ -317,13 +316,13 @@ class texWriter:
         f.write(r'\end{flushleft}' + '\n')
         f.write(r'\end{table}' + '\n')
 
-    def writeVOMacroPage(self, f, mo_dict, vo_dict, mo_makro='img/vo-makro.png'):
+    def writeVOMacroPage(self, f, mo_dict, vo_dict, vo_makro='img/vo-makro.png'):
         f.write(r'\clearpage' + '\n')
         f.write(r'\section{' + vo_dict['street'] + '}' + '\n')
         f.write(r'\subsection{Übersicht der Vergleichskriterien und Analyse der Makrolage}' + '\n')
         f.write(r'\begin{figure}[!htbp]' + '\n')
         f.write(r'\begin{minipage}[c]{0.55\textwidth}' + '\n')
-        f.write(r'\includegraphics[width=\textwidth]{' + mo_makro + '}' + '\n')
+        f.write(r'\includegraphics[width=\textwidth]{' + vo_makro + '}' + '\n')
         f.write(r'\end{minipage}\hfill' + '\n')
         f.write(r'\begin{minipage}[c]{0.44\textwidth}' + '\n')
         f.write(r'\begin{flushleft}' + '\n')
@@ -380,6 +379,14 @@ class texWriter:
         f.write(r'\end{tabular}' + '\n')
         f.write(r'\end{flushleft}' + '\n')
         f.write(r'\end{minipage}' + '\n')
+        f.write(r'\end{figure}' + '\n')
+
+    def writeVOMicroPage(self, f, mo_dict, vo_dict, vo_mikro='img/vo-makro.png'):
+        f.write(r'\clearpage' + '\n')
+        f.write(r'\section{' + vo_dict['street'] + '}' + '\n')
+        f.write(r'\subsection{Analyse der Mikrolage}' + '\n')
+        f.write(r'\begin{figure}[!htbp]' + '\n')
+        f.write(r'\includegraphics[width=\textwidth]{' + vo_mikro + '}' + '\n')
         f.write(r'\end{figure}' + '\n')
 
     def endDocument(self, f):
