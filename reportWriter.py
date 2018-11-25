@@ -52,8 +52,7 @@ def writeReport():
 
     import urllib
     for vo_key, vo_dict in vo_dicts.items():
-        search_string = ','.join ((vo_dict['street'], vo_dict['plz'], vo_dict['city']))
-        search_string = search_string.split('(')[0]
+        search_string = ','.join ((vo_dict['street'].split('(')[0], vo_dict['plz'], vo_dict['city']))
         search_string = (urllib.parse.quote_plus(search_string))
         print(search_string)
         writer.writeVOMacroPage(f, mo_dict, vo_dict, createStaticMap.createStaticVOMakroMap(address2=search_string, exportPath=vo_key))
