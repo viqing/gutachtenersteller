@@ -24,7 +24,7 @@ def writeReport():
     mo_dict['year'] = '1971'
 
     vo_dicts = createDictForObjects()
-    
+
     f = open('py2texTest2.tex', 'w')
     writer = texWriter()
     #import necessary packages into the tex file
@@ -51,19 +51,12 @@ def writeReport():
     for bin_key, bin_dict in vo_dict_5bin.items():
         writer.writeCompareTable(f, mo_dict, bin_dict, bin_key, len(vo_dict_5bin)) 
 
+    import urllib
     for vo_key, vo_dict in vo_dicts.items():
         search_string = ','.join ((vo_dict['street'], vo_dict['plz'], vo_dict['city']))
-        search_string = search_string.replace('ä','ae')
-        search_string = search_string.replace('ü','ue')
-        search_string = search_string.replace('ö','oe')
-        search_string = search_string.replace('è','e')
-        search_string = search_string.replace('é','e')
-        search_string = search_string.replace('Ă¨','e')
-        search_string = search_string.replace('Ã¨','e')
-        search_string = search_string.replace(' ','+')
-        macroImage =  createStaticMap.createStaticVOMakroMap(address2=search_string, exportPath=vo_key)
-        print(macroImage)
-        writer.writeVOMacroPage(f, mo_dict, vo_dict, macroImage)
+        search_string = (urllib.parse.quote_plus(search_string))
+        print(search_string)
+        writer.writeVOMacroPage(f, mo_dict, vo_dict, createStaticMap.createStaticVOMakroMap(address2=search_string, exportPath=vo_key))
         #writer.writeVOMicroPage()
 
     writer.endDocument(f)
