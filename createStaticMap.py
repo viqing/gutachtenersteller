@@ -20,7 +20,10 @@ def createStaticHOMap(zoom, exportedImgName, size='550x375', scale='2', maptype=
     import urllib.request
 
     #API Key and URL are static and should be chagned if needed
-    key = '&key=AIzaSyBtMIthbknn345WE5rJxBqE4McsTwkwmVk'
+    with open('api-key.txt', 'r') as api_file:
+        key = api_file.readline()
+
+    key = ''.join(('&key=', key))
     url = 'https://maps.googleapis.com/maps/api/staticmap?'
 
     size = ''.join(('&size=',size))
@@ -38,11 +41,14 @@ def createStaticHOMap(zoom, exportedImgName, size='550x375', scale='2', maptype=
 
     return fullExportPath
 
-def createStaticVOMakroMap(size='500x400', scale='2', maptype='hybrid',img_format='jpg', address1='Place+de+la+Gare+5A,+1003+Lausanne', address2='buelachstrasse+9g,zuerich,ch', exportedImgName='makro.jpg', exportPath='img'):
+def createStaticVOMakroMap(size='500x400', scale='2', maptype='hybrid',img_format='jpg', address1='Place+de+la+Gare+5A,+1003+Lausanne', address2='buelachstrasse+9g,zuerich,ch', exportPath='test', exportedImgName='makro.jpg'):
     import urllib.request
 
     #API Key and URL are static and should be chagned if needed
-    key = '&key=AIzaSyBtMIthbknn345WE5rJxBqE4McsTwkwmVk'
+    with open('api-key.txt', 'r') as api_file:
+        key = api_file.readline()
+
+    key = ''.join(('&key=', key))
     url = 'https://maps.googleapis.com/maps/api/staticmap?'
 
     size = ''.join(('&size=',size))
@@ -55,38 +61,37 @@ def createStaticVOMakroMap(size='500x400', scale='2', maptype='hybrid',img_forma
     marker2 = ''.join(('&markers=', address2))
 
     import os
-    fullExportPath = ''.join(('img/','vo_images/',exportPath,'/',exportedImgName))
     print(fullExportPath)
 
     param_url = ''.join((url, size, marker1, marker2, scale, maptype, img_format, path, key))
     urllib.request.urlretrieve(param_url, fullExportPath)
-    print("Static macro image created from {}\n Exported as {}.".format(param_url, fullExportPath))
-
-    #determine distance between marker1 and marker2 in m
-    address1LatLng = findLatLng(address1)
-    address2LatLng = findLatLng(address2)
-    distance = calculateDistance(address1LatLng, address2LatLng)
-
     #print the distance on the image
     from PIL import Image
     from PIL import ImageFont
     from PIL import ImageDraw
+    import os
 
     img = Image.open(fullExportPath)
     draw = ImageDraw.Draw(img)
     # font = ImageFont.truetype(<font-file>, <font-size>)
-    font = ImageFont.truetype("arial.ttf", 48)
+    if os.name == 'posix':
+        font = ImageFont.truetype("Arial.ttf", 48)
+    elif os.name == 'nt':
+        font = ImageFont.truetype("arial.ttf", 48)
     # draw.text((x, y),"Sample Text",(r,g,b))
     draw.text((500, 400), ''.join((str(distance),'m')), (255,250,250), font=font)
     img.save(fullExportPath)
 
     return fullExportPath
 
-def createStaticVOMikroMap(size='600x375', scale='2', maptype='hybrid',img_format='jpg', address='lagerstrasse+1,zuerich,ch', exportedImgName='img2.jpg', exportPath='img'):
+def createStaticVOMikroMap(size='600x375', scale='2', maptype='hybrid',img_format='jpg', address='lagerstrasse+1,zuerich,ch',exportPath='test', exportedImgName='mikro.jpg'):
     import urllib.request
 
     #API Key and URL are static and should be chagned if needed
-    key = '&key=AIzaSyBtMIthbknn345WE5rJxBqE4McsTwkwmVk'
+    with open('api-key.txt', 'r') as api_file:
+        key = api_file.readline()
+
+    key = ''.join(('&key=', key))
     url = 'https://maps.googleapis.com/maps/api/staticmap?'
 
     size = ''.join(('&size=',size))
@@ -107,7 +112,10 @@ def createStaticVOMikroMap(size='600x375', scale='2', maptype='hybrid',img_forma
 def findLatLng(address):
 
     #API Key and URL are static and should be chagned if needed
-    key = '&key=AIzaSyBtMIthbknn345WE5rJxBqE4McsTwkwmVk'
+    with open('api-key.txt', 'r') as api_file:
+        key = api_file.readline()
+
+    key = ''.join(('&key=', key))
     url = 'https://maps.googleapis.com/maps/api/geocode/json?'
     address = ''.join(('&address=', address))
     param_url = ''.join((url, address, key))
@@ -117,6 +125,25 @@ def findLatLng(address):
     resp_json_payload = response.json()
 
     return resp_json_payload['results'][0]['geometry']['location']['lat'], resp_json_payload['results'][0]['geometry']['location']['lng']
+
+def findClosestPlace(location=[47.401492, 8.547384], type='grocery_or_supermarket', rank_by='distance'):
+    import googlemaps
+
+    # documentatio for supported types:
+    # https://developers.google.com/places/web-service/supported_types
+
+    with open('api-key.txt', 'r') as api_file:
+        key = api_file.readline()
+    gmaps = googlemaps.Client(key=key)
+    results = gmaps.places_nearby(location=location, type=type, rank_by='distance')
+
+    nearestPlace = results['results'][0]
+    nearestPlaceLatLng = [nearestPlace['geometry']['location']['lat'],nearestPlace['geometry']['location']['lng']]
+    distanceToNearestPlace = calculateDistance(location, nearestPlaceLatLng)
+    nearestPlace['dist'] = distanceToNearestPlace
+
+    return nearestPlace
+    
 
 def calculateDistance(point1, point2):
 
