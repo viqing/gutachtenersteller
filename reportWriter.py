@@ -54,6 +54,7 @@ def writeReport():
     import urllib
     for vo_key, vo_dict in vo_dicts.items():
         search_string = ','.join ((vo_dict['street'], vo_dict['plz'], vo_dict['city']))
+        search_string = search_string.split('(')[0]
         search_string = (urllib.parse.quote_plus(search_string))
         print(search_string)
         writer.writeVOMacroPage(f, mo_dict, vo_dict, createStaticMap.createStaticVOMakroMap(address2=search_string, exportPath=vo_key))
@@ -110,6 +111,25 @@ def createDictForObjects(filename='output.csv'):
                 if objectsDict['_'.join(('s_full_link',str(j)))][i] != 'NONE':
                     consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['img'].append(saveVOImageLocally(''.join(('vo_', str(i+1))), ''.join(('img-',str(j),'.png')), objectsDict['_'.join(('s_full_link',str(j)))][i]))
 
+    #TODO Rename doppelte Strassennamen
+    streetNames = list()
+    objectKeys = list()
+    for vo_key, vo_dict in consolidatedObjectsDict.items():
+        streetNames.append(vo_dict['street'])
+        objectKeys.append(vo_key)
+    
+    for street in streetNames:
+        c = streetNames.count(street)
+        if c > 1:
+            idx = 1
+            for i in range(len(streetNames)):
+                if streetNames[i] == street:
+                    streetNames[i] = ''.join((streetNames[i], ' (', str(idx), ')'))
+                    idx += 1
+
+    for vo_key, changedStreetName in zip(objectKeys, streetNames):
+        consolidatedObjectsDict[vo_key]['street'] = changedStreetName
+
     return consolidatedObjectsDict
 
 def saveVOImageLocally(VOName, imgName, imgURL):
@@ -129,8 +149,6 @@ def saveVOImageLocally(VOName, imgName, imgURL):
         print('\n')
     else:
         return os.path.join('img', 'vo_images', VOName, imgName)
-
-
 
 if __name__=="__main__":
     writeReport()
