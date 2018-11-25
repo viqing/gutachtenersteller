@@ -57,7 +57,7 @@ def writeReport():
         search_string = (urllib.parse.quote_plus(search_string))
         print(search_string)
         writer.writeVOMacroPage(f, mo_dict, vo_dict, createStaticMap.createStaticVOMakroMap(address2=search_string, exportPath=vo_key))
-        #writer.writeVOMicroPage()
+        writer.writeAdditionalImagesPage(f, vo_dict)
 
     writer.endDocument(f)
 

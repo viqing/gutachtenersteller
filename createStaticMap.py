@@ -61,10 +61,18 @@ def createStaticVOMakroMap(size='500x400', scale='2', maptype='hybrid',img_forma
     marker2 = ''.join(('&markers=', address2))
 
     import os
+    fullExportPath = ''.join(('img/', 'vo_images/', exportPath, '/', exportedImgName))
     print(fullExportPath)
 
     param_url = ''.join((url, size, marker1, marker2, scale, maptype, img_format, path, key))
     urllib.request.urlretrieve(param_url, fullExportPath)
+    print("Static macro image created from {}\n Exported as {}.".format(param_url, fullExportPath))
+
+    #determine distance between marker1 and marker2 in m
+    address1LatLng = findLatLng(address1)
+    address2LatLng = findLatLng(address2)
+    distance = calculateDistance(address1LatLng, address2LatLng)
+
     #print the distance on the image
     from PIL import Image
     from PIL import ImageFont

@@ -391,5 +391,18 @@ class texWriter:
         f.write(r'\includegraphics[width=\textwidth]{' + vo_mikro + '}' + '\n')
         f.write(r'\end{figure}' + '\n')
 
+    def writeAdditionalImagesPage(self, f, vo_dict):
+        f.write(r'\clearpage' + '\n')
+        f.write(r'\section*{' + vo_dict['street'] + '}' + '\n')
+        f.write(r'\subsection{Weitere Ansichten}' + '\n')
+
+        imgList = vo_dict['img']
+        if imgList and all(img is not None for img in imgList):
+            f.write(r'\begin{figure}[!htbp]' + '\n')
+            f.write(r'\centering' + '\n')
+            for img in imgList:
+                f.write(r'\includegraphics[height=0.24\textwidth]{' + img + '}' + '\n')
+            f.write(r'\end{figure}' + '\n')
+
     def endDocument(self, f):
         f.write(r'\end{document}')
