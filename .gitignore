@@ -1,1 +1,9 @@
 api-key.txt
+img 
+*.log
+*.aux
+*.gz
+*.toc
+*.aux
+*.pdf
+*.csv
