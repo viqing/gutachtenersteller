@@ -32,7 +32,6 @@ def createStaticHOMap(zoom, exportedImgName, size='550x375', scale='2', maptype=
     img_format = ''.join(('&format=', img_format))
     marker = ''.join(('&markers=', address))
     zoom = ''.join(('&zoom=',zoom))
-    import os 
     fullExportPath = ''.join((exportPath,'/',exportedImgName))
 
     param_url = ''.join((url, size, marker, scale, maptype, img_format, zoom, key))
