@@ -1,5 +1,7 @@
 def writeReport():
     import createStaticMap
+    import dicttoxml
+    import xmltodict
     from latexWriter import texWriter
 
     #setup dict for main object
@@ -59,6 +61,15 @@ def writeReport():
         writer.writeAdditionalImagesPage(f, vo_dict)
 
     writer.endDocument(f)
+
+    #join ho and vo dicts for xml output
+    joined_dict = {}
+    joined_dict['mo'] = mo_dict
+    joined_dict['vo'] = vo_dicts
+    xml = dicttoxml.dicttoxml(joined_dict, attr_type=False)
+    with open('report.xml', 'w') as joined_xml:
+        joined_xml.write(xml.decode())
+    print(joined_dict)
 
 def createDictForObjects(filename='output.csv'):
 
