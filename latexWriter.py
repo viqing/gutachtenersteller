@@ -398,6 +398,7 @@ class texWriter:
         f.write(r'\end{figure}' + '\n')
 
     def writeAdditionalImagesPage(self, f, vo_dict):
+        #TODO make size of images dynamic
         f.write(r'\clearpage' + '\n')
         f.write(r'\section*{' + vo_dict['street'] + '}' + '\n')
         f.write(r'\subsection{Weitere Ansichten}' + '\n')
@@ -406,8 +407,8 @@ class texWriter:
         if imgList and all(img is not None for img in imgList):
             f.write(r'\begin{figure}[!htbp]' + '\n')
             f.write(r'\centering' + '\n')
-            for img in imgList:
-                f.write(r'\includegraphics[height=0.24\textwidth]{' + img + '}' + '\n')
+            for i, img in enumerate(imgList):
+                f.write(r'\includegraphics[width=0.22\textwidth, height=0.25\textheight, keepaspectratio]{' + img + '}' + '\n')
             f.write(r'\end{figure}' + '\n')
 
     def endDocument(self, f):
