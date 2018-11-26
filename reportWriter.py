@@ -162,9 +162,9 @@ def saveVOImageLocally(VOName, imgName, imgURL):
     print(imgURL)
     print(''.join(('img/','vo_images/', VOName, '/', imgName)))
     #create dir if path doesn't exist
-    os.makedirs(os.path.dirname(''.join(('img/', 'vo_images',VOName, '/',imgName))), exist_ok=True)
+    os.makedirs(os.path.dirname(''.join(('img/', 'vo_images/',VOName, '/',imgName))), exist_ok=True)
     try:
-        urllib.request.urlretrieve(imgURL, ''.join(('img/', 'vo_images',VOName, '/',imgName)))
+        urllib.request.urlretrieve(imgURL, ''.join(('img/', 'vo_images/',VOName, '/',imgName)))
     except Exception as e:
         print('Didnt work.')
         print(e)
