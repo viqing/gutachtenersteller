@@ -1,7 +1,6 @@
 def writeReport():
     import createStaticMap
     import dicttoxml
-    import xmltodict
     from latexWriter import texWriter
 
     #setup dict for main object
@@ -12,10 +11,10 @@ def writeReport():
     mo_dict['net_mo'] = '1600'
     mo_dict['m2_pa'] = '322'
     mo_dict['plz_city'] = '8004, Zürich'
-    mo_dict['d_school'] = 'Langstrasse 1234'
-    mo_dict['d_shop'] = 'Langstrasse 1234'
-    mo_dict['d_fun'] = 'Langstrasse 1234'
-    mo_dict['d_public'] = 'Langstrasse 1234'
+    mo_dict['d_school'] = '100m, 1min'
+    mo_dict['d_shop'] = '100m, 1min'
+    mo_dict['d_fun'] = '100m, 1min'
+    mo_dict['d_public'] = '100m, 1min'
     mo_dict['rooms'] = '4.0'
     mo_dict['size'] = '120m2'
     mo_dict['bath'] = '1 Bad/WC'
@@ -33,8 +32,8 @@ def writeReport():
     writer.setupTexFilePackages(f)
     writer.writeTitlePage(f, mo_str='Langstrasse 123', mo_plz='8004', mo_rooms='4.0', mo_city='Zürich')
     writer.writeHOTablePage(f, mo_dict)
-    writer.writeHOMacroPage(f, createStaticMap.createStaticHOMap(zoom='14', exportedImgName='ho-makro.jpg'))
-    writer.writeHOMikroPage(f, createStaticMap.createStaticHOMap(zoom='18', exportedImgName='ho-mikro.jpg'))
+    writer.writeHOMacroPage(f, createStaticMap.createStaticHOMap(zoom='14', exportedImgName='ho_images/ho-makro.jpg'))
+    writer.writeHOMikroPage(f, createStaticMap.createStaticHOMap(zoom='18', exportedImgName='ho_images/ho-mikro.jpg'))
 
     writer.writeCompareGraph(f, mo_dict, vo_dicts)
     
@@ -48,15 +47,15 @@ def writeReport():
             bin_counter += 1
             vo_dict_5bin[str(bin_counter)] = {}
 
-    #LOOP THROUGH VO_DICT_BIN TODO
+    #LOOP THROUGH VO_DICT_BIN
     for bin_key, bin_dict in vo_dict_5bin.items():
         writer.writeCompareTable(f, mo_dict, bin_dict, bin_key, len(vo_dict_5bin)) 
 
+    #TODO makro images müssen dict hinzugefügt werden
     import urllib
     for vo_key, vo_dict in vo_dicts.items():
         search_string = ','.join ((vo_dict['street'].split('(')[0], vo_dict['plz'], vo_dict['city']))
         search_string = (urllib.parse.quote_plus(search_string))
-        print(search_string)
         writer.writeVOMacroPage(f, mo_dict, vo_dict, createStaticMap.createStaticVOMakroMap(address2=search_string, exportPath=vo_key))
         writer.writeAdditionalImagesPage(f, vo_dict)
 
@@ -64,12 +63,10 @@ def writeReport():
 
     #join ho and vo dicts for xml output
     joined_dict = {}
-    joined_dict['mo'] = mo_dict
-    joined_dict['vo'] = vo_dicts
+    joined_dict['mo'], joined_dict['vo'] = mo_dict, vo_dicts
     xml = dicttoxml.dicttoxml(joined_dict, attr_type=False)
     with open('report.xml', 'w') as joined_xml:
         joined_xml.write(xml.decode())
-    print(joined_dict)
 
 def createDictForObjects(filename='output.csv'):
 
@@ -100,29 +97,20 @@ def createDictForObjects(filename='output.csv'):
         consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['lat'] = objectsDict['s_lat'][i]
         consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['lon'] = objectsDict['s_lon'][i]
 
-        #TODO clean this shit up
+        #TODO implement Naherholung
         import createStaticMap
         location = [float(objectsDict['s_lat'][i]), float(objectsDict['s_lon'][i])]
         #distance to school
         nearestSchool = createStaticMap.findClosestPlace(location=location, type='school')
-        distToNearestSchool = nearestSchool['dist']
-        distToNearestSchool = int(round(distToNearestSchool/10 + 0.5) * 10)
-        distToNearestSchoolTime = int(round(float(distToNearestSchool)/100 + 0.5) * 100)
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['d_school'] = ''.join((str(distToNearestSchool),'m, ', str(distToNearestSchoolTime), 'min'))
+        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['d_school'] = ''.join((str(nearestSchool['dist10m']),'m, ', str(nearestSchool['distWalkingTime']), 'min'))
         #distance to shop
         nearestShop = createStaticMap.findClosestPlace(location=location, type='grocery_or_supermarket')
-        distToNearestShop = nearestShop['dist']
-        distToNearestShop = int(round(distToNearestShop/10 + 0.5) * 10)
-        distToNearestShopTime = int(round(float(distToNearestShop)/100 + 0.5) * 100)
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['d_shop'] = ''.join((str(distToNearestShop),'m, ', str(distToNearestShopTime), 'min'))
+        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['d_shop'] = ''.join((str(nearestShop['dist10m']),'m, ', str(nearestShop['distWalkingTime']), 'min'))
         #tbd - distnace to naherholung
         consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['d_fun'] = 'tbd'
         #distance to busstation
         nearestBusStop = createStaticMap.findClosestPlace(location=location, type='bus_station')
-        distToNearestBusStop = nearestBusStop['dist']
-        distToNearestBusStop = int(round(distToNearestBusStop/10 + 0.5) * 10)
-        distToNearestBusStopTime = int(round(float(distToNearestBusStop)/100 + 0.5) * 100)
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['d_public'] = ''.join((str(distToNearestBusStop),'m, ', str(distToNearestBusStopTime), 'min'))
+        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['d_public'] = ''.join((str(nearestBusStop['dist10m']),'m, ', str(nearestBusStop['distWalkingTime']), 'min'))
 
 
         consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['rooms'] = objectsDict['s_nbrooms'][i]
@@ -170,18 +158,21 @@ def saveVOImageLocally(VOName, imgName, imgURL):
     #returns None if image cant be retrieved
     import os
     import urllib.request
-    print(imgURL)
-    print(''.join(('img/','vo_images/', VOName, '/', imgName)))
-    #create dir if path doesn't exist
-    os.makedirs(os.path.dirname(''.join(('img/', 'vo_images/',VOName, '/',imgName))), exist_ok=True)
-    try:
-        urllib.request.urlretrieve(imgURL, ''.join(('img/', 'vo_images/',VOName, '/',imgName)))
-    except Exception as e:
-        print('Didnt work.')
-        print(e)
-        print('\n')
+    fullExportPath = ''.join(('img/','vo_images/', VOName, '/', imgName))
+    if not os.path.isfile(fullExportPath):
+        os.makedirs(os.path.dirname(fullExportPath), exist_ok=True) #create dir if file doesn't exist
+        try:
+            urllib.request.urlretrieve(imgURL, fullExportPath)
+        except Exception as e:
+            print('Could not access file through link. Exception:\n')
+            print(e)
+            print('\n')
+        else:
+            print('Image file for {} was downloaded as {}.\n'.format(VOName, fullExportPath))
+            return ''.join(('img/', 'vo_images/', VOName, '/', imgName))
     else:
-        return ''.join(('img/', 'vo_images/', VOName, '/', imgName))
+        print('File already exists for {} under {}.\n'.format(VOName, fullExportPath))
+        return(fullExportPath)
 
 if __name__=="__main__":
     writeReport()

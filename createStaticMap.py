@@ -18,6 +18,7 @@ and should be changed further on.
 
 def createStaticHOMap(zoom, exportedImgName, size='550x375', scale='2', maptype='hybrid',img_format='jpg', address='lagerstrasse+1,zuerich,ch', exportPath='img'):
     import urllib.request
+    import os
 
     #API Key and URL are static and should be chagned if needed
     with open('api-key.txt', 'r') as api_file:
@@ -33,15 +34,17 @@ def createStaticHOMap(zoom, exportedImgName, size='550x375', scale='2', maptype=
     marker = ''.join(('&markers=', address))
     zoom = ''.join(('&zoom=',zoom))
     fullExportPath = ''.join((exportPath,'/',exportedImgName))
-
-    param_url = ''.join((url, size, marker, scale, maptype, img_format, zoom, key))
-    urllib.request.urlretrieve(param_url, fullExportPath)
-    print("Static mikro image created from {}\n Exported as {}.".format(param_url, fullExportPath))
-
+    if not os.path.isfile(fullExportPath):
+        param_url = ''.join((url, size, marker, scale, maptype, img_format, zoom, key))
+        urllib.request.urlretrieve(param_url, fullExportPath)
+        print("Static mikro/makro image for HO created from {}\n Exported as {}.".format(param_url, fullExportPath))
+    else:
+        print("Static mikro/makro image for HO already exists as {}.\n".format(fullExportPath))
     return fullExportPath
 
 def createStaticVOMakroMap(size='500x400', scale='2', maptype='hybrid',img_format='jpg', address1='Place+de+la+Gare+5A,+1003+Lausanne', address2='buelachstrasse+9g,zuerich,ch', exportPath='test', exportedImgName='makro.jpg'):
     import urllib.request
+    import os
 
     #API Key and URL are static and should be chagned if needed
     with open('api-key.txt', 'r') as api_file:
@@ -59,40 +62,41 @@ def createStaticVOMakroMap(size='500x400', scale='2', maptype='hybrid',img_forma
     marker1 = ''.join(('&markers=', address1))
     marker2 = ''.join(('&markers=', address2))
 
-    import os
     fullExportPath = ''.join(('img/', 'vo_images/', exportPath, '/', exportedImgName))
-    print(fullExportPath)
+    if not os.path.isfile(fullExportPath):
+        param_url = ''.join((url, size, marker1, marker2, scale, maptype, img_format, path, key))
+        urllib.request.urlretrieve(param_url, fullExportPath)
+        print("Static macro image created from {}\n Exported as {}.\n".format(param_url, fullExportPath))
 
-    param_url = ''.join((url, size, marker1, marker2, scale, maptype, img_format, path, key))
-    urllib.request.urlretrieve(param_url, fullExportPath)
-    print("Static macro image created from {}\n Exported as {}.".format(param_url, fullExportPath))
+        #determine distance between marker1 and marker2 in m
+        address1LatLng = findLatLng(address1)
+        address2LatLng = findLatLng(address2)
+        distance = calculateDistance(address1LatLng, address2LatLng)
 
-    #determine distance between marker1 and marker2 in m
-    address1LatLng = findLatLng(address1)
-    address2LatLng = findLatLng(address2)
-    distance = calculateDistance(address1LatLng, address2LatLng)
+        #print the distance on the image
+        from PIL import Image
+        from PIL import ImageFont
+        from PIL import ImageDraw
+        import os
 
-    #print the distance on the image
-    from PIL import Image
-    from PIL import ImageFont
-    from PIL import ImageDraw
-    import os
-
-    img = Image.open(fullExportPath)
-    draw = ImageDraw.Draw(img)
-    # font = ImageFont.truetype(<font-file>, <font-size>)
-    if os.name == 'posix':
-        font = ImageFont.truetype("Arial.ttf", 48)
-    elif os.name == 'nt':
-        font = ImageFont.truetype("arial.ttf", 48)
-    # draw.text((x, y),"Sample Text",(r,g,b))
-    draw.text((500, 400), ''.join((str(distance),'m')), (255,250,250), font=font)
-    img.save(fullExportPath)
+        img = Image.open(fullExportPath)
+        draw = ImageDraw.Draw(img)
+        # font = ImageFont.truetype(<font-file>, <font-size>)
+        if os.name == 'posix':
+            font = ImageFont.truetype("Arial.ttf", 48)
+        elif os.name == 'nt':
+            font = ImageFont.truetype("arial.ttf", 48)
+        # draw.text((x, y),"Sample Text",(r,g,b))
+        draw.text((500, 400), ''.join((str(distance),'m')), (255,250,250), font=font)
+        img.save(fullExportPath)
+    else:
+        print("Static macro image already exists as {}.\n".format(fullExportPath))
 
     return fullExportPath
 
 def createStaticVOMikroMap(size='600x375', scale='2', maptype='hybrid',img_format='jpg', address='lagerstrasse+1,zuerich,ch',exportPath='test', exportedImgName='mikro.jpg'):
     import urllib.request
+    import os
 
     #API Key and URL are static and should be chagned if needed
     with open('api-key.txt', 'r') as api_file:
@@ -109,11 +113,12 @@ def createStaticVOMikroMap(size='600x375', scale='2', maptype='hybrid',img_forma
     marker = ''.join(('&markers=', address))
 
     fullExportPath = ''.join((exportPath,'/',exportedImgName))
-
-    param_url = ''.join((url, size, marker, scale, maptype, img_format, zoom, key))
-    urllib.request.urlretrieve(param_url, fullExportPath)
-    print("Static mikro image created from {}\n Exported as {}.".format(param_url, fullExportPath))
-
+    if not os.path.isfile(fullExportPath):
+        param_url = ''.join((url, size, marker, scale, maptype, img_format, zoom, key))
+        urllib.request.urlretrieve(param_url, fullExportPath)
+        print("Static mikro image created from {}\n Exported as {}.\n".format(param_url, fullExportPath))
+    else:
+        print("Static micro image already exists as {}.\n".format(fullExportPath))
     return fullExportPath
 
 def findLatLng(address):
@@ -135,9 +140,13 @@ def findLatLng(address):
 
 def findClosestPlace(location=[47.401492, 8.547384], type='grocery_or_supermarket', rank_by='distance'):
     import googlemaps
-
-    # documentatio for supported types:
+    # documentation for supported types:
     # https://developers.google.com/places/web-service/supported_types
+
+    #returns additionally to standard google output dict:
+    # 'dist' - raw distance to nearest object
+    # 'dist10m' - distance rounded to 10m
+    # 'distWalkingTime' - walking time roughly calculated as 1min/100m 
 
     with open('api-key.txt', 'r') as api_file:
         key = api_file.readline()
@@ -148,6 +157,8 @@ def findClosestPlace(location=[47.401492, 8.547384], type='grocery_or_supermarke
     nearestPlaceLatLng = [nearestPlace['geometry']['location']['lat'],nearestPlace['geometry']['location']['lng']]
     distanceToNearestPlace = calculateDistance(location, nearestPlaceLatLng)
     nearestPlace['dist'] = distanceToNearestPlace
+    nearestPlace['dist10m'] = int(round(distanceToNearestPlace/10 + 0.5) * 10)
+    nearestPlace['distWalkingTime'] = int(round(distanceToNearestPlace/100 + 0.5))
 
     return nearestPlace
     
