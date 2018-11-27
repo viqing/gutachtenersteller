@@ -39,8 +39,8 @@ class texWriter:
 
         f.write(r'\fancypagestyle{plain}{' + '\n')
         f.write(r'\fancyhf{}' + '\n')
-        f.write(r'\lhead{\includegraphics[width=3cm]{img/hwz-logo.jpg}}' + '\n')
-        f.write(r'\rhead{\includegraphics[width=3cm]{img/swissrei-logo.jpg}}' + '\n')
+        f.write(r'\lhead{\includegraphics[width=3cm]{img/hwz-logo.png}}' + '\n')
+        f.write(r'\rhead{\includegraphics[width=3cm]{img/swissrei-logo.png}}' + '\n')
         f.write(r'\rfoot{Seite \thepage}' + '\n')
         f.write(r'\cfoot{Prof. Dr. Peter Ilg, Leiter Swiss Real Estate Institute}' + '\n')
         f.write(r'\lfoot{\today}' + '\n')
@@ -389,7 +389,7 @@ class texWriter:
         f.write(r'\end{minipage}' + '\n')
         f.write(r'\end{figure}' + '\n')
 
-    def writeVOMicroPage(self, f, mo_dict, vo_dict, vo_mikro='img\vo-makro.png'):
+    def writeVOMicroPage(self, f, mo_dict, vo_dict, vo_mikro='img\vo-mikro.png'):
         f.write(r'\clearpage' + '\n')
         f.write(r'\section{' + vo_dict['street'] + '}' + '\n')
         f.write(r'\subsection{Analyse der Mikrolage}' + '\n')
