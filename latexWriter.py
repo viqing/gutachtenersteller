@@ -17,9 +17,11 @@ class texWriter:
         f.write(r'\usepackage{fancyhdr}' + '\n')
         f.write(r'\usepackage[T1]{fontenc}' + '\n')
         f.write(r'\usepackage[ngerman]{babel}' + '\n')
-        f.write(r'\usepackage{caption}' + '\n\n')
+        f.write(r'\usepackage{caption}' + '\n')
         f.write(r'\usepackage{pgfplots}' + '\n')
-        f.write(r'\usepackage{tabularx}' + '\n')
+        f.write(r'\usepackage{tabularx}' + '\n\n')
+
+        f.write(r'\setcounter{tocdepth}{2}' + '\n\n')
 
         f.write(r'\newcommand\YUGE{\fontsize{100}{120}\selectfont}' + '\n\n')
 
@@ -56,26 +58,32 @@ class texWriter:
         f.write(mo_rooms + ' Zimmer' + r'\\' + '\n')
         f.write(mo_plz + ' ' + mo_city + r'\\' + '\n')
 
+    def writeTOC(self, f):
+        f.write(r'\clearpage' + '\n')
+        f.write(r'\renewcommand{\baselinestretch}{1.1}\normalsize' + '\n')
+        f.write(r'\tableofcontents' + '\n')
+        f.write(r'\renewcommand{\baselinestretch}{1.0}\normalsize' + '\n')
+
     def writeHOTablePage(self, f, mo_dict):
         f.write(r'\clearpage' + '\n')
         f.write(r'\section{Details zum Hauptobjekt}' + '\n')
-        f.write(r'Analyse der relevanten Vergleichskriterien.' + '\n')
+        f.write(r'\subsection{Übersicht der relevanten Vergleichskriterien}' + '\n')
         f.write(r'\begin{flushleft}' + '\n')
         f.write(r'\renewcommand{\arraystretch}{1.1}' + '\n')
         f.write(r'\setlength{\tabcolsep}{10pt}' + '\n')
         f.write(r'\begin{tabular}{ |p{\dimexpr 0.18\linewidth-2\tabcolsep}|p{\dimexpr 0.15\linewidth-2\tabcolsep}| } ' + '\n')
         f.write(r'\hline' + '\n')
-        f.write(r'Adresse & \cellcolor{lightgray}' + mo_dict['street'] + r'\\' + '\n')
+        f.write(r'\textbf{Adresse} & \cellcolor{lightgray}\textbf{' + mo_dict['street'] + r'}\\' + '\n')
         f.write(r'\hline' + '\n')
-        f.write(r'\rowcolor{gray} Monatspreis &\\ ' + '\n')
+        f.write(r'\rowcolor{gray} Monatspreis (CHF) &\\ ' + '\n')
         f.write(r'\hline' + '\n')
-        f.write(r'Nettomietzins & \cellcolor{lightgray}' + mo_dict['net_mo'] + r'\\' + '\n')
+        f.write(r'Nettomietzins & \cellcolor{lightgray}' + mo_dict['net_mo'] + r'.-\\' + '\n')
         f.write(r'\hline' + '\n')
-        f.write(r'Nebenkosten & \cellcolor{lightgray}' + mo_dict['ext_mo'] + r'\\' + '\n')
+        f.write(r'Nebenkosten & \cellcolor{lightgray}' + mo_dict['ext_mo'] + r'.-\\' + '\n')
         f.write(r'\hline' + '\n')
-        f.write(r'Bruttomietzins & \cellcolor{lightgray}' + mo_dict['br_mo'] + r'\\' + '\n')
+        f.write(r'\textbf{Bruttomietzins} & \cellcolor{lightgray}\textbf{' + mo_dict['br_mo'] + r'.-}\\' + '\n')
         f.write(r'\hline' + '\n')
-        f.write(r'Mietzins/m2 p.a. & \cellcolor{lightgray}' + mo_dict['m2_pa'] + r'\\' + '\n')
+        f.write(r'Mietzins/m2 p.a. & \cellcolor{lightgray}' + mo_dict['m2_pa'] + r'.-\\' + '\n')
         f.write(r'\hline' + '\n')
         f.write(r'\rowcolor{gray} Lage \& Distanzen &\\' + '\n')
         f.write(r'\hline' + '\n')
@@ -116,7 +124,7 @@ class texWriter:
 
     def writeHOMacroPage(self, f, path):
         f.write(r'\clearpage' + '\n')
-        f.write(r'\section{Analyse der Makrolage}' + '\n')
+        f.write(r'\subsection{Analyse der Makrolage}' + '\n')
         f.write(r'\begin{figure}[!htbp]' + '\n')
         f.write(r'\begin{minipage}[c]{0.67\textwidth}' + '\n')
         f.write(r'\includegraphics[width=\textwidth]{'+ path +'}' + '\n')
@@ -133,7 +141,7 @@ class texWriter:
 
     def writeHOMikroPage(self, f, path):
         f.write(r'\clearpage' + '\n')
-        f.write(r'\section{Analyse der Makrolage}' + '\n')
+        f.write(r'\subsection{Analyse der Mikrolage}' + '\n')
         f.write(r'\begin{figure}[!htbp]' + '\n')
         f.write(r'\begin{minipage}[c]{0.67\textwidth}' + '\n')
         f.write(r'\includegraphics[width=\textwidth]{'+ path +'}' + '\n')
@@ -147,6 +155,10 @@ class texWriter:
         f.write(r'\end{itemize}' + '\n')
         f.write(r'\end{minipage}' + '\n')
         f.write(r'\end{figure}' + '\n')
+
+    def writeHOAdditionalImagesPage(self, f):
+        f.write(r'\clearpage' + '\n')
+        f.write(r'\subsection{Details zur Ausstattung und weitere Ansichten}' + '\n')
 
     def writeCompareGraph(self, f, mo_dict, vo_dicts):
         average = 0
@@ -211,7 +223,9 @@ class texWriter:
 
     def writeCompareTable(self, f, mo_dict, vo_dicts, currentBinIndex, maxBinIndex):
         f.write(r'\clearpage' + '\n')
-        f.write(r'\section{Vergleich der Mietobjekte (' + str(currentBinIndex) + '/' + str(maxBinIndex) + ')}' + '\n')
+        if currentBinIndex == '1':
+            f.write(r'\section{Übersicht der Vergleichskriterien aller Mietobjekte}' + '\n')
+        f.write(r'\subsection*{Vergleich der Mietobjekte (Teil ' + str(currentBinIndex) + '/' + str(maxBinIndex) + ')}' + '\n')
         f.write(r'\begin{table}[!htbp]' + '\n')
         f.write(r'\begin{flushleft}' + '\n')
         f.write(r'\renewcommand{\arraystretch}{1.1}' + '\n')
@@ -219,17 +233,17 @@ class texWriter:
         printStringList = [None] * 48
         printStringList[0] =r'\begin{tabular}{ | p{\dimexpr 0.172\linewidth-2\tabcolsep} | p{\dimexpr 0.138\linewidth-2\tabcolsep} |'
         printStringList[1] =r'\hline' + '\n'
-        printStringList[2] =r'Adresse & \cellcolor{lightgray} ' + mo_dict['street']
+        printStringList[2] =r'\textbf{Adresse} & \cellcolor{lightgray}\textbf{' + mo_dict['street'] + '}'
         printStringList[3] =r'\hline' + '\n'
-        printStringList[4] =r'\rowcolor{gray} Monatspreis & '
+        printStringList[4] =r'\rowcolor{gray} Monatspreis (CHF) & '
         printStringList[5] =r'\hline' + '\n'
-        printStringList[6] =r'Nettomietzins & \cellcolor{lightgray} ' + mo_dict['net_mo']
+        printStringList[6] =r'Nettomietzins & \cellcolor{lightgray} ' + mo_dict['net_mo'] + '.-'
         printStringList[7] =r'\hline' + '\n'
-        printStringList[8] =r'Nebenkosten & \cellcolor{lightgray} ' + mo_dict['ext_mo']
+        printStringList[8] =r'Nebenkosten & \cellcolor{lightgray} ' + mo_dict['ext_mo'] + '.-'
         printStringList[9] =r'\hline' + '\n'
-        printStringList[10] =r'Bruttomietzins & \cellcolor{lightgray} ' + mo_dict['br_mo']
+        printStringList[10] =r'\textbf{Bruttomietzins} & \cellcolor{lightgray}\textbf{' + mo_dict['br_mo'] + '.-}'
         printStringList[11] =r'\hline' + '\n'
-        printStringList[12] =r'Mietzins/m2 p.a. & \cellcolor{lightgray} ' + mo_dict['m2_pa']
+        printStringList[12] =r'Mietzins/m2 p.a. & \cellcolor{lightgray} ' + mo_dict['m2_pa'] + '.-'
         printStringList[13] =r'\hline' + '\n'
         printStringList[14] =r'\rowcolor{gray} Lage \& Distanzen & '
         printStringList[15] =r'\hline' + '\n'
@@ -268,12 +282,12 @@ class texWriter:
 
         for vo_dict in vo_dicts.values():
             printStringList[0] = ''.join((printStringList[0], r'p{\dimexpr 0.138\linewidth-2\tabcolsep} |'))
-            printStringList[2] = ''.join((printStringList[2],' & ',vo_dict['street']))
+            printStringList[2] = ''.join((printStringList[2],r' & \textbf{',vo_dict['street'], '}'))
             printStringList[4] = ''.join((printStringList[4],' & '))
-            printStringList[6] = ''.join((printStringList[6],' & ',vo_dict['net_mo']))
-            printStringList[8] = ''.join((printStringList[8],' & ',vo_dict['ext_mo']))
-            printStringList[10] = ''.join((printStringList[10],' & ', vo_dict['br_mo']))
-            printStringList[12] = ''.join((printStringList[12],' & ', vo_dict['m2_pa']))
+            printStringList[6] = ''.join((printStringList[6],' & ',vo_dict['net_mo'],'.-'))
+            printStringList[8] = ''.join((printStringList[8],' & ',vo_dict['ext_mo'],'.-'))
+            printStringList[10] = ''.join((printStringList[10],r' & \textbf{', vo_dict['br_mo'], '.-}'))
+            printStringList[12] = ''.join((printStringList[12],' & ', vo_dict['m2_pa'],'.-'))
             printStringList[14] = ''.join((printStringList[14],' & '))
             printStringList[16] = ''.join((printStringList[16],' & ', vo_dict['plz'],', ',vo_dict['city']))
             printStringList[18] = ''.join((printStringList[18],' & ', vo_dict['d_school']))
@@ -326,8 +340,8 @@ class texWriter:
 
     def writeVOMacroPage(self, f, mo_dict, vo_dict, vo_makro):
         f.write(r'\clearpage' + '\n')
-        f.write(r'\section{' + vo_dict['street'] + '}' + '\n')
-        f.write(r'\subsection{Übersicht der Vergleichskriterien und Analyse der Makrolage}' + '\n')
+        f.write(r'\subsection{' + vo_dict['street'] + '}' + '\n')
+        f.write(r'\subsubsection{Übersicht der Vergleichskriterien und Analyse der Makrolage}' + '\n')
         f.write(r'\begin{figure}[!htbp]' + '\n')
         f.write(r'\begin{minipage}[c]{0.55\textwidth}' + '\n')
         f.write(r'\includegraphics[width=\textwidth]{' + vo_makro + '}' + '\n')
@@ -338,17 +352,17 @@ class texWriter:
         f.write(r'\setlength{\tabcolsep}{10pt}' + '\n')
         f.write(r'\begin{tabular}{ |l|l|l| } ' + '\n')
         f.write(r'\hline' + '\n')
-        f.write(r'Adresse & \cellcolor{lightgray}' + mo_dict['street'] + '&' + vo_dict['street'] + r'\\' + '\n')
+        f.write(r'\textbf{Adresse} & \cellcolor{lightgray}\textbf{' + mo_dict['street'] + r'}&\textbf{' + vo_dict['street'] + r'}\\' + '\n')
         f.write(r'\hline' + '\n')
-        f.write(r'\rowcolor{gray} Monatspreis & &\\ ' + '\n')
+        f.write(r'\rowcolor{gray} Monatspreis (CHF) & &\\ ' + '\n')
         f.write(r'\hline' + '\n')
-        f.write(r'Nettomietzins & \cellcolor{lightgray}' + mo_dict['net_mo'] + '&' + vo_dict['net_mo'] + r'\\' + '\n')
+        f.write(r'Nettomietzins & \cellcolor{lightgray}' + mo_dict['net_mo'] + '.-&' + vo_dict['net_mo'] + r'.-\\' + '\n')
         f.write(r'\hline' + '\n')
-        f.write(r'Nebenkosten & \cellcolor{lightgray}' + mo_dict['ext_mo'] + '&' + vo_dict['ext_mo'] + r'\\' + '\n')
+        f.write(r'Nebenkosten & \cellcolor{lightgray}' + mo_dict['ext_mo'] + '.-&' + vo_dict['ext_mo'] + r'.-\\' + '\n')
         f.write(r'\hline' + '\n')
-        f.write(r'Bruttomietzins & \cellcolor{lightgray}' + mo_dict['br_mo'] + '&' + vo_dict['br_mo'] + r'\\' + '\n')
+        f.write(r'Bruttomietzins & \cellcolor{lightgray}\textbf{' + mo_dict['br_mo'] + r'.-}&\textbf{' + vo_dict['br_mo'] + r'.-}\\' + '\n')
         f.write(r'\hline' + '\n')
-        f.write(r'Mietzins/m2 p.a. & \cellcolor{lightgray}' + mo_dict['m2_pa'] + '&' + vo_dict['m2_pa'] + r'\\' + '\n')
+        f.write(r'Mietzins/m2 p.a. & \cellcolor{lightgray}' + mo_dict['m2_pa'] + '.-&' + vo_dict['m2_pa'] + r'.-\\' + '\n')
         f.write(r'\hline' + '\n')
         f.write(r'\rowcolor{gray} Lage \& Distanzen & &\\' + '\n')
         f.write(r'\hline' + '\n')
@@ -397,11 +411,10 @@ class texWriter:
         f.write(r'\includegraphics[width=\textwidth]{' + vo_mikro + '}' + '\n')
         f.write(r'\end{figure}' + '\n')
 
-    def writeAdditionalImagesPage(self, f, vo_dict):
+    def writeVOAdditionalImagesPage(self, f, vo_dict):
         #TODO make size of images dynamic
         f.write(r'\clearpage' + '\n')
-        f.write(r'\section*{' + vo_dict['street'] + '}' + '\n')
-        f.write(r'\subsection{Weitere Ansichten}' + '\n')
+        f.write(r'\subsubsection{Weitere Ansichten}' + '\n')
 
         imgList = vo_dict['img']
         if imgList and all(img is not None for img in imgList):
