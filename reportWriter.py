@@ -25,15 +25,17 @@ def writeReport():
     mo_dict['year'] = '1971'
 
     vo_dicts = createDictForObjects()
-
+    #TODO FORMAT PRICES NICELY
     f = open('py2texTest2.tex', 'w')
     writer = texWriter()
     #import necessary packages into the tex file
     writer.setupTexFilePackages(f)
     writer.writeTitlePage(f, mo_str='Langstrasse 123', mo_plz='8004', mo_rooms='4.0', mo_city='Zürich')
+    writer.writeTOC(f)
     writer.writeHOTablePage(f, mo_dict)
     writer.writeHOMacroPage(f, createStaticMap.createStaticHOMap(zoom='14', exportedImgName='ho_images/ho-makro.jpg'))
     writer.writeHOMikroPage(f, createStaticMap.createStaticHOMap(zoom='18', exportedImgName='ho_images/ho-mikro.jpg'))
+    writer.writeHOAdditionalImagesPage(f)
 
     writer.writeCompareGraph(f, mo_dict, vo_dicts)
     
@@ -57,8 +59,12 @@ def writeReport():
         search_string = ','.join ((vo_dict['street'].split('(')[0], vo_dict['plz'], vo_dict['city']))
         search_string = (urllib.parse.quote_plus(search_string))
         writer.writeVOMacroPage(f, mo_dict, vo_dict, createStaticMap.createStaticVOMakroMap(address2=search_string, exportPath=vo_key))
+<<<<<<< HEAD
         writer.writeVOMicroPage(f, mo_dict, vo_dict, createStaticMap.createStaticVOMikroMap(address=search_string, exportPath=vo_key))
         writer.writeAdditionalImagesPage(f, vo_dict)                 
+=======
+        writer.writeVOAdditionalImagesPage(f, vo_dict)
+>>>>>>> b140e75336226f524cca5c5f61e16857ccf02ab0
 
     writer.endDocument(f)
 
