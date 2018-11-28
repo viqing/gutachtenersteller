@@ -59,12 +59,8 @@ def writeReport():
         search_string = ','.join ((vo_dict['street'].split('(')[0], vo_dict['plz'], vo_dict['city']))
         search_string = (urllib.parse.quote_plus(search_string))
         writer.writeVOMacroPage(f, mo_dict, vo_dict, createStaticMap.createStaticVOMakroMap(address2=search_string, exportPath=vo_key))
-<<<<<<< HEAD
         writer.writeVOMicroPage(f, mo_dict, vo_dict, createStaticMap.createStaticVOMikroMap(address=search_string, exportPath=vo_key))
-        writer.writeAdditionalImagesPage(f, vo_dict)                 
-=======
-        writer.writeVOAdditionalImagesPage(f, vo_dict)
->>>>>>> b140e75336226f524cca5c5f61e16857ccf02ab0
+        writer.writeVOAdditionalImagesPage(f, vo_dict)                 
 
     writer.endDocument(f)
 

@@ -410,7 +410,7 @@ class texWriter:
         f.write(r'\begin{figure}[!htbp]' + '\n')
         f.write(r'\includegraphics[width=\textwidth]{' + vo_mikro + '}' + '\n')
         f.write(r'\end{figure}' + '\n')
-
+           
     def writeVOAdditionalImagesPage(self, f, vo_dict):
         #TODO make size of images dynamic
         f.write(r'\clearpage' + '\n')
