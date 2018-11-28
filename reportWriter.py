@@ -28,7 +28,6 @@ def writeReport():
     #TODO FORMAT PRICES NICELY
     f = open('py2texTest2.tex', 'w')
     writer = texWriter()
-    #import necessary packages into the tex file
     writer.setupTexFilePackages(f)
     writer.writeTitlePage(f, mo_str='Langstrasse 123', mo_plz='8004', mo_rooms='4.0', mo_city='Zürich')
     writer.writeTOC(f)
@@ -36,10 +35,10 @@ def writeReport():
     writer.writeHOMacroPage(f, createStaticMap.createStaticHOMap(zoom='14', exportedImgName='ho_images/ho-makro.jpg'))
     writer.writeHOMikroPage(f, createStaticMap.createStaticHOMap(zoom='18', exportedImgName='ho_images/ho-mikro.jpg'))
     writer.writeHOAdditionalImagesPage(f)
-
     writer.writeCompareGraph(f, mo_dict, vo_dicts)
     
-    #create sub-dicts of vo's with bin size of 5
+    # create sub-dicts of vo's with bin size of 5
+    # creates page for every new 5 objects
     vo_dict_5bin = {}
     bin_counter = 1
     vo_dict_5bin[str(bin_counter)] = {}
@@ -48,7 +47,6 @@ def writeReport():
         if (i+1)%5==0 and (i+1)!=len(vo_dicts):
             bin_counter += 1
             vo_dict_5bin[str(bin_counter)] = {}
-
     #LOOP THROUGH VO_DICT_BIN
     for bin_key, bin_dict in vo_dict_5bin.items():
         writer.writeCompareTable(f, mo_dict, bin_dict, bin_key, len(vo_dict_5bin)) 
@@ -58,7 +56,7 @@ def writeReport():
     for vo_key, vo_dict in vo_dicts.items():
         search_string = ','.join ((vo_dict['street'].split('(')[0], vo_dict['plz'], vo_dict['city']))
         search_string = (urllib.parse.quote_plus(search_string))
-        writer.writeVOMacroPage(f, mo_dict, vo_dict, createStaticMap.createStaticVOMakroMap(address2=search_string, exportPath=vo_key))
+        writer.writeVOMacroPage(f, mo_dict, vo_dict)
         writer.writeVOAdditionalImagesPage(f, vo_dict)
 
     writer.endDocument(f)
@@ -83,56 +81,66 @@ def createDictForObjects(filename='output.csv'):
             for header, value in zip(headers, row):
                 objectsDict[header].append(value)
 
-    #LON AND LAT ALREADY EXIST FOR THESE OBJECTS
-    dictKeys = ('street', 'br_mo', 'ext_mo', 'net_mo', 'm2_pa', 'plz', 'city', 'lat', 'lon', 'd_school', 'd_shop', 'd_fun', 'd_public', 'rooms', 'size', 'bath', 'kitchen', 'balkon', 'lift', 'floor', 'year', 'description')
+    #TODO add makro and mikro images here already and dont call them in the latexwriter
     numberOfMaxAvailableImageLinks = sum('s_full_link' in key for key in objectsDict.keys())
     consolidatedObjectsDict = {}
     for i in range(len(objectsDict['double1group_id'])):
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))] = dict.fromkeys(dictKeys)
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['street'] = objectsDict['s_street'][i]
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['br_mo'] = objectsDict['s_grossrent'][i]
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['net_mo'] = objectsDict['s_netrent'][i]
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['ext_mo'] = str(float(objectsDict['s_grossrent'][i]) - float(objectsDict['s_netrent'][i]))
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['m2_pa'] = str(int(12.0 * float(objectsDict['s_grossrent'][i]) / float(objectsDict['s_surface_usuable'][i])))
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['plz'] = objectsDict['s_zip'][i]
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['city'] = objectsDict['s_city'][i]
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['lat'] = objectsDict['s_lat'][i]
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['lon'] = objectsDict['s_lon'][i]
+        new_vo = ''.join(('vo_', str(i+1)))
+        consolidatedObjectsDict[new_vo] = {}
+        consolidatedObjectsDict[new_vo]['street'] = objectsDict['s_street'][i]
+        consolidatedObjectsDict[new_vo]['br_mo'] = objectsDict['s_grossrent'][i]
+        consolidatedObjectsDict[new_vo]['net_mo'] = objectsDict['s_netrent'][i]
+        consolidatedObjectsDict[new_vo]['ext_mo'] = str(float(objectsDict['s_grossrent'][i]) - float(objectsDict['s_netrent'][i]))
+        consolidatedObjectsDict[new_vo]['m2_pa'] = str(int(12.0 * float(objectsDict['s_grossrent'][i]) / float(objectsDict['s_surface_usuable'][i])))
+        consolidatedObjectsDict[new_vo]['plz'] = objectsDict['s_zip'][i]
+        consolidatedObjectsDict[new_vo]['city'] = objectsDict['s_city'][i]
+        consolidatedObjectsDict[new_vo]['lat'] = objectsDict['s_lat'][i]
+        consolidatedObjectsDict[new_vo]['lon'] = objectsDict['s_lon'][i]
 
         #TODO implement Naherholung
         import createStaticMap
+        # Distances
         location = [float(objectsDict['s_lat'][i]), float(objectsDict['s_lon'][i])]
-        #distance to school
+            # Distance to schools
         nearestSchool = createStaticMap.findClosestPlace(location=location, type='school')
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['d_school'] = ''.join((str(nearestSchool['dist10m']),'m, ', str(nearestSchool['distWalkingTime']), 'min'))
-        #distance to shop
+        consolidatedObjectsDict[new_vo]['d_school'] = ''.join((str(nearestSchool['dist10m']),'m, ', str(nearestSchool['distWalkingTime']), 'min'))
+            # Distance to shops
         nearestShop = createStaticMap.findClosestPlace(location=location, type='grocery_or_supermarket')
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['d_shop'] = ''.join((str(nearestShop['dist10m']),'m, ', str(nearestShop['distWalkingTime']), 'min'))
-        #tbd - distnace to naherholung
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['d_fun'] = 'tbd'
-        #distance to busstation
+        consolidatedObjectsDict[new_vo]['d_shop'] = ''.join((str(nearestShop['dist10m']),'m, ', str(nearestShop['distWalkingTime']), 'min'))
+            #tbd - distnace to naherholung
+        consolidatedObjectsDict[new_vo]['d_fun'] = 'tbd'
+            # Distance to public transport
         nearestBusStop = createStaticMap.findClosestPlace(location=location, type='bus_station')
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['d_public'] = ''.join((str(nearestBusStop['dist10m']),'m, ', str(nearestBusStop['distWalkingTime']), 'min'))
+        consolidatedObjectsDict[new_vo]['d_public'] = ''.join((str(nearestBusStop['dist10m']),'m, ', str(nearestBusStop['distWalkingTime']), 'min'))
+        # Criteria for size
+        consolidatedObjectsDict[new_vo]['rooms'] = objectsDict['s_nbrooms'][i]
+        consolidatedObjectsDict[new_vo]['size'] = objectsDict['s_surface_usuable'][i]
+        # Criteria for Equipment
+        consolidatedObjectsDict[new_vo]['bath'] = 'tbd'
+        consolidatedObjectsDict[new_vo]['kitchen'] = 'tbd'
+        consolidatedObjectsDict[new_vo]['balkon'] = 'tbd'
+        consolidatedObjectsDict[new_vo]['lift'] = 'tbd'
+        consolidatedObjectsDict[new_vo]['floor'] = 'tbd'
+        # Year built
+        consolidatedObjectsDict[new_vo]['year'] = objectsDict['s_construction_year'][i]
+        # Description
+        consolidatedObjectsDict[new_vo]['description'] = ' | '.join((objectsDict['s_title'][i],objectsDict['s_description'][i]))
 
+        # Makro images
+        import urllib
+        search_string = ','.join ((consolidatedObjectsDict[new_vo]['street'].split('(')[0], consolidatedObjectsDict[new_vo]['plz'], consolidatedObjectsDict[new_vo]['city']))
+        search_string = urllib.parse.quote_plus(search_string) #parse so urls pose no problems in browsers
+        consolidatedObjectsDict[new_vo]['makro'] = createStaticMap.createStaticVOMakroMap(address2=search_string, exportPath=new_vo)
 
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['rooms'] = objectsDict['s_nbrooms'][i]
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['size'] = objectsDict['s_surface_usuable'][i]
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['bath'] = 'tbd'
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['kitchen'] = 'tbd'
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['balkon'] = 'tbd'
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['lift'] = 'tbd'
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['floor'] = 'tbd'
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['year'] = objectsDict['s_construction_year'][i]
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['description'] = ' | '.join((objectsDict['s_title'][i],objectsDict['s_description'][i]))
-
-        consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['img'] = []
+        # Download images and saving the export path in list
+        consolidatedObjectsDict[new_vo]['img'] = []
         for j in range(numberOfMaxAvailableImageLinks):
             if j==0:
                 if objectsDict['s_full_link'][i] != 'NONE':
-                    consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['img'].append(saveVOImageLocally(''.join(('vo_', str(i+1))), ''.join(('img-',str(j),'.png')), objectsDict['s_full_link'][i]))
+                    consolidatedObjectsDict[new_vo]['img'].append(saveVOImageLocally(new_vo, ''.join(('img-',str(j),'.png')), objectsDict['s_full_link'][i]))
             else:
                 if objectsDict['_'.join(('s_full_link',str(j)))][i] != 'NONE':
-                    consolidatedObjectsDict[''.join(('vo_', str(i+1)))]['img'].append(saveVOImageLocally(''.join(('vo_', str(i+1))), ''.join(('img-',str(j),'.png')), objectsDict['_'.join(('s_full_link',str(j)))][i]))
+                    consolidatedObjectsDict[new_vo]['img'].append(saveVOImageLocally(new_vo, ''.join(('img-',str(j),'.png')), objectsDict['_'.join(('s_full_link',str(j)))][i]))
 
     #Rename doppelte Strassennamen
     streetNames = list()

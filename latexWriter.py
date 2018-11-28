@@ -338,13 +338,13 @@ class texWriter:
         f.write(r'\end{flushleft}' + '\n')
         f.write(r'\end{table}' + '\n')
 
-    def writeVOMacroPage(self, f, mo_dict, vo_dict, vo_makro):
+    def writeVOMacroPage(self, f, mo_dict, vo_dict):
         f.write(r'\clearpage' + '\n')
         f.write(r'\subsection{' + vo_dict['street'] + '}' + '\n')
         f.write(r'\subsubsection{Übersicht der Vergleichskriterien und Analyse der Makrolage}' + '\n')
         f.write(r'\begin{figure}[!htbp]' + '\n')
         f.write(r'\begin{minipage}[c]{0.55\textwidth}' + '\n')
-        f.write(r'\includegraphics[width=\textwidth]{' + vo_makro + '}' + '\n')
+        f.write(r'\includegraphics[width=\textwidth]{' + vo_dict['makro'] + '}' + '\n')
         f.write(r'\end{minipage}\hfill' + '\n')
         f.write(r'\begin{minipage}[c]{0.44\textwidth}' + '\n')
         f.write(r'\begin{flushleft}' + '\n')
