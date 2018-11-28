@@ -338,13 +338,13 @@ class texWriter:
         f.write(r'\end{flushleft}' + '\n')
         f.write(r'\end{table}' + '\n')
 
-    def writeVOMacroPage(self, f, mo_dict, vo_dict, vo_makro):
+    def writeVOMacroPage(self, f, mo_dict, vo_dict):
         f.write(r'\clearpage' + '\n')
         f.write(r'\subsection{' + vo_dict['street'] + '}' + '\n')
         f.write(r'\subsubsection*{Übersicht der Vergleichskriterien und Analyse der Makrolage}' + '\n')
         f.write(r'\begin{figure}[!htbp]' + '\n')
         f.write(r'\begin{minipage}[c]{0.55\textwidth}' + '\n')
-        f.write(r'\includegraphics[width=\textwidth]{' + vo_makro + '}' + '\n')
+        f.write(r'\includegraphics[width=\textwidth]{' + vo_dict['makro'] + '}' + '\n')
         f.write(r'\end{minipage}\hfill' + '\n')
         f.write(r'\begin{minipage}[c]{0.44\textwidth}' + '\n')
         f.write(r'\begin{flushleft}' + '\n')
@@ -403,13 +403,17 @@ class texWriter:
         f.write(r'\end{minipage}' + '\n')
         f.write(r'\end{figure}' + '\n')
 
-    def writeVOMicroPage(self, f, mo_dict, vo_dict, vo_mikro='img\vo-mikro.png'):
+    def writeVOMicroPage(self, f, vo_dict):
         f.write(r'\clearpage' + '\n')
         f.write(r'\subsection*{' + vo_dict['street'] + '}' + '\n')
         f.write(r'\subsubsection*{Analyse der Mikrolage}' + '\n')
         f.write(r'\begin{figure}[!htbp]' + '\n')
+<<<<<<< HEAD
         f.write(r'\centering' + '\n')
         f.write(r'\includegraphics[width=0.9\textwidth]{' + vo_mikro + '}' + '\n')
+=======
+        f.write(r'\includegraphics[width=\textwidth]{' + vo_dict['mikro'] + '}' + '\n')
+>>>>>>> e8efa883fe9330e31275856a9197699e607f44de
         f.write(r'\end{figure}' + '\n')
            
     def writeVOAdditionalImagesPage(self, f, vo_dict):
