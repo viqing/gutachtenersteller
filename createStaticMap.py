@@ -94,7 +94,7 @@ def createStaticVOMakroMap(size='500x400', scale='2', maptype='hybrid',img_forma
 
     return fullExportPath
 
-def createStaticVOMikroMap(size='600x275', scale='2', maptype='hybrid',img_format='jpg', address='lagerstrasse+1,zuerich,ch',exportPath='test', exportedImgName='mikro.jpg'):
+def createStaticVOMikroMap(size='525x275', scale='2', maptype='hybrid',img_format='jpg', address='lagerstrasse+1,zuerich,ch',exportPath='test', exportedImgName='mikro.jpg'):
     import urllib.request
     import os
 
