@@ -403,12 +403,12 @@ class texWriter:
         f.write(r'\end{minipage}' + '\n')
         f.write(r'\end{figure}' + '\n')
 
-    def writeVOMicroPage(self, f, mo_dict, vo_dict, vo_mikro='img\vo-mikro.png'):
+    def writeVOMicroPage(self, f, vo_dict):
         f.write(r'\clearpage' + '\n')
         f.write(r'\section{' + vo_dict['street'] + '}' + '\n')
         f.write(r'\subsection{Analyse der Mikrolage}' + '\n')
         f.write(r'\begin{figure}[!htbp]' + '\n')
-        f.write(r'\includegraphics[width=\textwidth]{' + vo_mikro + '}' + '\n')
+        f.write(r'\includegraphics[width=\textwidth]{' + vo_dict['mikro'] + '}' + '\n')
         f.write(r'\end{figure}' + '\n')
            
     def writeVOAdditionalImagesPage(self, f, vo_dict):

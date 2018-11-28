@@ -57,10 +57,8 @@ def writeReport():
         search_string = ','.join ((vo_dict['street'].split('(')[0], vo_dict['plz'], vo_dict['city']))
         search_string = (urllib.parse.quote_plus(search_string))
         writer.writeVOMacroPage(f, mo_dict, vo_dict)
-        writer.writeVOAdditionalImagesPage(f, vo_dict)
-        writer.writeVOMacroPage(f, mo_dict, vo_dict, createStaticMap.createStaticVOMakroMap(address2=search_string, exportPath=vo_key))
-        writer.writeVOMicroPage(f, mo_dict, vo_dict, createStaticMap.createStaticVOMikroMap(address=search_string, exportPath=vo_key))
-        writer.writeVOAdditionalImagesPage(f, vo_dict)                 
+        writer.writeVOMicroPage(f, vo_dict)
+        writer.writeVOAdditionalImagesPage(f, vo_dict)         
 
     writer.endDocument(f)
 
@@ -134,6 +132,7 @@ def createDictForObjects(filename='output.csv'):
         search_string = ','.join ((consolidatedObjectsDict[new_vo]['street'].split('(')[0], consolidatedObjectsDict[new_vo]['plz'], consolidatedObjectsDict[new_vo]['city']))
         search_string = urllib.parse.quote_plus(search_string) #parse so urls pose no problems in browsers
         consolidatedObjectsDict[new_vo]['makro'] = createStaticMap.createStaticVOMakroMap(address2=search_string, exportPath=new_vo)
+        consolidatedObjectsDict[new_vo]['mikro'] = createStaticMap.createStaticVOMikroMap(address=search_string, exportPath=new_vo)
 
         # Download images and saving the export path in list
         consolidatedObjectsDict[new_vo]['img'] = []
