@@ -4,6 +4,14 @@ Creates a CSV-to-LaTeX printer object.
 
 class texWriter:
 
+    @staticmethod
+    def formatCHFString(CHFString):
+        # Takes a string and adds a ' 1000 separator
+        # 1000 -> 1'000
+        if len(CHFString) > 3:
+            return CHFString[:-3] + "'" + CHFString[-3:]
+        return CHFString
+
     def __init__(self):
         pass
 
@@ -77,11 +85,11 @@ class texWriter:
         f.write(r'\hline' + '\n')
         f.write(r'\rowcolor{gray} Monatspreis (CHF) &\\ ' + '\n')
         f.write(r'\hline' + '\n')
-        f.write(r'Nettomietzins & \cellcolor{lightgray}' + mo_dict['net_mo'] + r'.-\\' + '\n')
+        f.write(r'Nettomietzins & \cellcolor{lightgray}' + self.formatCHFString(mo_dict['net_mo']) + r'.-\\' + '\n')
         f.write(r'\hline' + '\n')
         f.write(r'Nebenkosten & \cellcolor{lightgray}' + mo_dict['ext_mo'] + r'.-\\' + '\n')
         f.write(r'\hline' + '\n')
-        f.write(r'\textbf{Bruttomietzins} & \cellcolor{lightgray}\textbf{' + mo_dict['br_mo'] + r'.-}\\' + '\n')
+        f.write(r'\textbf{Bruttomietzins} & \cellcolor{lightgray}\textbf{' + self.formatCHFString(mo_dict['br_mo']) + r'.-}\\' + '\n')
         f.write(r'\hline' + '\n')
         f.write(r'Mietzins/m2 p.a. & \cellcolor{lightgray}' + mo_dict['m2_pa'] + r'.-\\' + '\n')
         f.write(r'\hline' + '\n')
@@ -158,19 +166,15 @@ class texWriter:
         f.write(r'\end{minipage}' + '\n')
         f.write(r'\end{figure}' + '\n')
 
-    def writeHOAdditionalImagesPage(self, f):
+    def writeHOAdditionalImagesPage(self, f, mo_dict):
         f.write(r'\clearpage' + '\n')
         f.write(r'\subsection{Details zur Ausstattung und weitere Ansichten}' + '\n')
         f.write(r'\begin{figure}[!htbp]' + '\n')
         f.write(r'\begin{minipage}[t]{0.67\textwidth}' + '\n')
         f.write(r'\begin{flushleft}' + '\n')
         f.write(r'\strut\vspace*{-\baselineskip}\newline' + '\n')
-        f.write(r'\includegraphics[height=110pt, keepaspectratio]{img/ho_images/img-0.png}' + '\n')
-        f.write(r'\includegraphics[height=110pt, keepaspectratio]{img/ho_images/img-1.png}' + '\n')
-        f.write(r'\includegraphics[height=110pt, keepaspectratio]{img/ho_images/img-2.png}' + '\n')
-        f.write(r'\includegraphics[height=110pt, keepaspectratio]{img/ho_images/img-3.png}' + '\n')
-        f.write(r'\includegraphics[height=110pt, keepaspectratio]{img/ho_images/img-4.png}' + '\n')
-        f.write(r'\includegraphics[height=110pt, keepaspectratio]{img/ho_images/img-5.png}' + '\n')
+        for img in mo_dict['img']:
+            f.write(r'\includegraphics[height=110pt, keepaspectratio]{' + img + '}' + '\n')
         f.write(r'\end{flushleft}' + '\n')
         f.write(r'\end{minipage}\hfill' + '\n')
         f.write(r'\begin{minipage}[t]{0.3\textwidth}' + '\n')
@@ -260,11 +264,11 @@ class texWriter:
         printStringList[3] =r'\hline' + '\n'
         printStringList[4] =r'\rowcolor{gray} Monatspreis (CHF) & '
         printStringList[5] =r'\hline' + '\n'
-        printStringList[6] =r'Nettomietzins & \cellcolor{lightgray} ' + mo_dict['net_mo'] + '.-'
+        printStringList[6] =r'Nettomietzins & \cellcolor{lightgray} ' + self.formatCHFString(mo_dict['net_mo']) + '.-'
         printStringList[7] =r'\hline' + '\n'
         printStringList[8] =r'Nebenkosten & \cellcolor{lightgray} ' + mo_dict['ext_mo'] + '.-'
         printStringList[9] =r'\hline' + '\n'
-        printStringList[10] =r'\textbf{Bruttomietzins} & \cellcolor{lightgray}\textbf{' + mo_dict['br_mo'] + '.-}'
+        printStringList[10] =r'\textbf{Bruttomietzins} & \cellcolor{lightgray}\textbf{' + self.formatCHFString(mo_dict['br_mo']) + '.-}'
         printStringList[11] =r'\hline' + '\n'
         printStringList[12] =r'Mietzins/m2 p.a. & \cellcolor{lightgray} ' + mo_dict['m2_pa'] + '.-'
         printStringList[13] =r'\hline' + '\n'
@@ -307,9 +311,9 @@ class texWriter:
             printStringList[0] = ''.join((printStringList[0], r'p{\dimexpr 0.138\linewidth-2\tabcolsep} |'))
             printStringList[2] = ''.join((printStringList[2],r' & \textbf{',vo_dict['street'], '}'))
             printStringList[4] = ''.join((printStringList[4],' & '))
-            printStringList[6] = ''.join((printStringList[6],' & ',vo_dict['net_mo'],'.-'))
+            printStringList[6] = ''.join((printStringList[6],' & ',self.formatCHFString(vo_dict['net_mo']),'.-'))
             printStringList[8] = ''.join((printStringList[8],' & ',vo_dict['ext_mo'],'.-'))
-            printStringList[10] = ''.join((printStringList[10],r' & \textbf{', vo_dict['br_mo'], '.-}'))
+            printStringList[10] = ''.join((printStringList[10],r' & \textbf{', self.formatCHFString(vo_dict['br_mo']), '.-}'))
             printStringList[12] = ''.join((printStringList[12],' & ', vo_dict['m2_pa'],'.-'))
             printStringList[14] = ''.join((printStringList[14],' & '))
             printStringList[16] = ''.join((printStringList[16],' & ', vo_dict['plz'],', ',vo_dict['city']))
@@ -379,11 +383,11 @@ class texWriter:
         f.write(r'\hline' + '\n')
         f.write(r'\rowcolor{gray} Monatspreis (CHF) & &\\ ' + '\n')
         f.write(r'\hline' + '\n')
-        f.write(r'Nettomietzins & \cellcolor{lightgray}' + mo_dict['net_mo'] + '.-&' + vo_dict['net_mo'] + r'.-\\' + '\n')
+        f.write(r'Nettomietzins & \cellcolor{lightgray}' + self.formatCHFString(mo_dict['net_mo']) + '.-&' + self.formatCHFString(vo_dict['net_mo']) + r'.-\\' + '\n')
         f.write(r'\hline' + '\n')
         f.write(r'Nebenkosten & \cellcolor{lightgray}' + mo_dict['ext_mo'] + '.-&' + vo_dict['ext_mo'] + r'.-\\' + '\n')
         f.write(r'\hline' + '\n')
-        f.write(r'Bruttomietzins & \cellcolor{lightgray}\textbf{' + mo_dict['br_mo'] + r'.-}&\textbf{' + vo_dict['br_mo'] + r'.-}\\' + '\n')
+        f.write(r'Bruttomietzins & \cellcolor{lightgray}\textbf{' + self.formatCHFString(mo_dict['br_mo']) + r'.-}&\textbf{' + self.formatCHFString(vo_dict['br_mo']) + r'.-}\\' + '\n')
         f.write(r'\hline' + '\n')
         f.write(r'Mietzins/m2 p.a. & \cellcolor{lightgray}' + mo_dict['m2_pa'] + '.-&' + vo_dict['m2_pa'] + r'.-\\' + '\n')
         f.write(r'\hline' + '\n')

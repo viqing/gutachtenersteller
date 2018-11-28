@@ -1,5 +1,6 @@
 def writeReport():
     import createStaticMap
+    import urllib
     import dicttoxml
     from latexWriter import texWriter
 
@@ -37,11 +38,11 @@ def writeReport():
     writer.writeHOTablePage(f, mo_dict)
     writer.writeHOMakroPage(f, mo_dict)
     writer.writeHOMikroPage(f, mo_dict)
-    writer.writeHOAdditionalImagesPage(f)
+    writer.writeHOAdditionalImagesPage(f, mo_dict)
     writer.writeCompareGraph(f, mo_dict, vo_dicts)
     
-    # create sub-dicts of vo's with bin size of 5
-    # creates page for every new 5 objects
+    # Create sub-dicts of vo's with bin size of 5
+    # Creates page for every new 5 objects
     vo_dict_5bin = {}
     bin_counter = 1
     vo_dict_5bin[str(bin_counter)] = {}
@@ -50,12 +51,11 @@ def writeReport():
         if (i+1)%5==0 and (i+1)!=len(vo_dicts):
             bin_counter += 1
             vo_dict_5bin[str(bin_counter)] = {}
-    #LOOP THROUGH VO_DICT_BIN
+    # LOOP THROUGH VO_DICT_BIN
     for bin_key, bin_dict in vo_dict_5bin.items():
         writer.writeCompareTable(f, mo_dict, bin_dict, bin_key, len(vo_dict_5bin)) 
 
-    #TODO makro images müssen dict hinzugefügt werden
-    import urllib
+    # Write Makro, Mikro und Additional Images Page für jedes VO
     for vo_key, vo_dict in vo_dicts.items():
         search_string = ','.join ((vo_dict['street'].split('(')[0], vo_dict['plz'], vo_dict['city']))
         search_string = (urllib.parse.quote_plus(search_string))
@@ -63,9 +63,11 @@ def writeReport():
         writer.writeVOMicroPage(f, vo_dict)
         writer.writeVOAdditionalImagesPage(f, vo_dict)         
 
+    # End the Document
     writer.endDocument(f)
 
-    #join ho and vo dicts for xml output
+    # Join ho and vo dicts for xml output
+    # Can later on be used to easily recreate existing reports
     joined_dict = {}
     joined_dict['mo'], joined_dict['vo'] = mo_dict, vo_dicts
     xml = dicttoxml.dicttoxml(joined_dict, attr_type=False)
@@ -94,7 +96,7 @@ def createDictForObjects(filename='output.csv'):
         consolidatedObjectsDict[new_vo]['street'] = objectsDict['s_street'][i]
         consolidatedObjectsDict[new_vo]['br_mo'] = objectsDict['s_grossrent'][i]
         consolidatedObjectsDict[new_vo]['net_mo'] = objectsDict['s_netrent'][i]
-        consolidatedObjectsDict[new_vo]['ext_mo'] = str(float(objectsDict['s_grossrent'][i]) - float(objectsDict['s_netrent'][i]))
+        consolidatedObjectsDict[new_vo]['ext_mo'] = str(int(objectsDict['s_grossrent'][i]) - int(objectsDict['s_netrent'][i]))
         consolidatedObjectsDict[new_vo]['m2_pa'] = str(int(12.0 * float(objectsDict['s_grossrent'][i]) / float(objectsDict['s_surface_usuable'][i])))
         consolidatedObjectsDict[new_vo]['plz'] = objectsDict['s_zip'][i]
         consolidatedObjectsDict[new_vo]['city'] = objectsDict['s_city'][i]
@@ -112,7 +114,8 @@ def createDictForObjects(filename='output.csv'):
         nearestShop = createStaticMap.findClosestPlace(location=location, type='grocery_or_supermarket')
         consolidatedObjectsDict[new_vo]['d_shop'] = ''.join((str(nearestShop['dist10m']),'m, ', str(nearestShop['distWalkingTime']), 'min'))
             #tbd - distnace to naherholung
-        consolidatedObjectsDict[new_vo]['d_fun'] = 'tbd'
+        nearestPark = createStaticMap.findClosestPlace(location=location, type='park')
+        consolidatedObjectsDict[new_vo]['d_fun'] = ''.join((str(nearestPark['dist10m']),'m, ', str(nearestPark['distWalkingTime']), 'min'))
             # Distance to public transport
         nearestBusStop = createStaticMap.findClosestPlace(location=location, type='bus_station')
         consolidatedObjectsDict[new_vo]['d_public'] = ''.join((str(nearestBusStop['dist10m']),'m, ', str(nearestBusStop['distWalkingTime']), 'min'))
