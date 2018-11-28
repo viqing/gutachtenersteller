@@ -33,7 +33,7 @@ def createStaticHOMap(zoom, exportedImgName, size='550x375', scale='2', maptype=
     img_format = ''.join(('&format=', img_format))
     marker = ''.join(('&markers=', address))
     zoom = ''.join(('&zoom=',zoom))
-    fullExportPath = ''.join((exportPath,'/',exportedImgName))
+    fullExportPath = ''.join(('img/', exportPath,'/',exportedImgName))
     if not os.path.isfile(fullExportPath):
         param_url = ''.join((url, size, marker, scale, maptype, img_format, zoom, key))
         urllib.request.urlretrieve(param_url, fullExportPath)
@@ -178,7 +178,4 @@ def calculateDistance(point1, point2):
     return round(d)
 
 if __name__=="__main__":
-    createStaticHOMap(zoom='14', exportedImgName='ho-makro.jpg')
-    createStaticHOMap(zoom='18', exportedImgName='ho-mikro.jpg')
-    createStaticVOMakroMap()
-    createStaticVOMikroMap()
+    pass

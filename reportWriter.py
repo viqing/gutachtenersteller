@@ -23,6 +23,9 @@ def writeReport():
     mo_dict['lift'] = 'Vorhanden'
     mo_dict['floor'] = '4. OG'
     mo_dict['year'] = '1971'
+    mo_dict['makro'] = createStaticMap.createStaticHOMap(zoom='14',exportPath='ho_images', exportedImgName='ho-makro.jpg')
+    mo_dict['mikro'] = createStaticMap.createStaticHOMap(zoom='18',exportPath='ho_images', exportedImgName='ho-mikro.jpg')
+    mo_dict['img'] = ['img/ho_images/img-0.png','img/ho_images/img-1.png','img/ho_images/img-2.png','img/ho_images/img-3.png','img/ho_images/img-4.png','img/ho_images/img-5.png',]
 
     vo_dicts = createDictForObjects()
     #TODO FORMAT PRICES NICELY
@@ -32,8 +35,8 @@ def writeReport():
     writer.writeTitlePage(f, mo_str='Langstrasse 123', mo_plz='8004', mo_rooms='4.0', mo_city='Zürich')
     writer.writeTOC(f)
     writer.writeHOTablePage(f, mo_dict)
-    writer.writeHOMacroPage(f, createStaticMap.createStaticHOMap(zoom='14', exportedImgName='ho_images/ho-makro.jpg'))
-    writer.writeHOMikroPage(f, createStaticMap.createStaticHOMap(zoom='18', exportedImgName='ho_images/ho-mikro.jpg'))
+    writer.writeHOMakroPage(f, mo_dict)
+    writer.writeHOMikroPage(f, mo_dict)
     writer.writeHOAdditionalImagesPage(f)
     writer.writeCompareGraph(f, mo_dict, vo_dicts)
     

@@ -122,14 +122,15 @@ class texWriter:
         f.write(r'\end{tabular}' + '\n')
         f.write(r'\end{flushleft}' + '\n')
 
-    def writeHOMacroPage(self, f, path):
+    def writeHOMakroPage(self, f, mo_dict):
         f.write(r'\clearpage' + '\n')
         f.write(r'\subsection{Analyse der Makrolage}' + '\n')
         f.write(r'\begin{figure}[!htbp]' + '\n')
-        f.write(r'\begin{minipage}[c]{0.67\textwidth}' + '\n')
-        f.write(r'\includegraphics[width=\textwidth]{'+ path +'}' + '\n')
+        f.write(r'\begin{minipage}[t]{0.67\textwidth}' + '\n')
+        f.write(r'\strut\vspace*{-\baselineskip}\newline' + '\n')
+        f.write(r'\includegraphics[width=\textwidth]{'+ mo_dict['makro'] +'}' + '\n')
         f.write(r'\end{minipage}\hfill' + '\n')
-        f.write(r'\begin{minipage}[c]{0.3\textwidth}' + '\n')
+        f.write(r'\begin{minipage}[t]{0.3\textwidth}' + '\n')
         f.write(r'\begin{itemize}' + '\n')
         f.write(r'\item ÖV und Bahnhof in Gehdistanz' + '\n')
         f.write(r'\item Schulen sind schnell erreichbar' + '\n')
@@ -139,14 +140,15 @@ class texWriter:
         f.write(r'\end{minipage}' + '\n')
         f.write(r'\end{figure}' + '\n')
 
-    def writeHOMikroPage(self, f, path):
+    def writeHOMikroPage(self, f, mo_dict):
         f.write(r'\clearpage' + '\n')
         f.write(r'\subsection{Analyse der Mikrolage}' + '\n')
         f.write(r'\begin{figure}[!htbp]' + '\n')
-        f.write(r'\begin{minipage}[c]{0.67\textwidth}' + '\n')
-        f.write(r'\includegraphics[width=\textwidth]{'+ path +'}' + '\n')
+        f.write(r'\begin{minipage}[t]{0.67\textwidth}' + '\n')
+        f.write(r'\strut\vspace*{-\baselineskip}\newline' + '\n')
+        f.write(r'\includegraphics[width=\textwidth]{'+ mo_dict['mikro'] +'}' + '\n')
         f.write(r'\end{minipage}\hfill' + '\n')
-        f.write(r'\begin{minipage}[c]{0.3\textwidth}' + '\n')
+        f.write(r'\begin{minipage}[t]{0.3\textwidth}' + '\n')
         f.write(r'\begin{itemize}' + '\n')
         f.write(r'\item ÖV und Bahnhof in Gehdistanz' + '\n')
         f.write(r'\item Schulen sind schnell erreichbar' + '\n')
@@ -159,6 +161,27 @@ class texWriter:
     def writeHOAdditionalImagesPage(self, f):
         f.write(r'\clearpage' + '\n')
         f.write(r'\subsection{Details zur Ausstattung und weitere Ansichten}' + '\n')
+        f.write(r'\begin{figure}[!htbp]' + '\n')
+        f.write(r'\begin{minipage}[t]{0.67\textwidth}' + '\n')
+        f.write(r'\begin{flushleft}' + '\n')
+        f.write(r'\strut\vspace*{-\baselineskip}\newline' + '\n')
+        f.write(r'\includegraphics[height=110pt, keepaspectratio]{img/ho_images/img-0.png}' + '\n')
+        f.write(r'\includegraphics[height=110pt, keepaspectratio]{img/ho_images/img-1.png}' + '\n')
+        f.write(r'\includegraphics[height=110pt, keepaspectratio]{img/ho_images/img-2.png}' + '\n')
+        f.write(r'\includegraphics[height=110pt, keepaspectratio]{img/ho_images/img-3.png}' + '\n')
+        f.write(r'\includegraphics[height=110pt, keepaspectratio]{img/ho_images/img-4.png}' + '\n')
+        f.write(r'\includegraphics[height=110pt, keepaspectratio]{img/ho_images/img-5.png}' + '\n')
+        f.write(r'\end{flushleft}' + '\n')
+        f.write(r'\end{minipage}\hfill' + '\n')
+        f.write(r'\begin{minipage}[t]{0.3\textwidth}' + '\n')
+        f.write(r'\begin{itemize}' + '\n')
+        f.write(r'\item ÖV und Bahnhof in Gehdistanz' + '\n')
+        f.write(r'\item Schulen sind schnell erreichbar' + '\n')
+        f.write(r'\item Einkaufszentren nur wenige Minuten entfernt und ist nicht weit von Nachtclubs' + '\n')
+        f.write(r'\item Nahe gelegen an populären Einkaufszentren' + '\n')
+        f.write(r'\end{itemize}' + '\n')
+        f.write(r'\end{minipage}' + '\n')
+        f.write(r'\end{figure}' + '\n')
 
     def writeCompareGraph(self, f, mo_dict, vo_dicts):
         average = 0
