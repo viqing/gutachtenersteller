@@ -408,7 +408,8 @@ class texWriter:
         f.write(r'\subsection*{' + vo_dict['street'] + '}' + '\n')
         f.write(r'\subsubsection*{Analyse der Mikrolage}' + '\n')
         f.write(r'\begin{figure}[!htbp]' + '\n')
-        f.write(r'\includegraphics{' + vo_mikro + '}' + '\n')
+        f.write(r'\centering' + '\n')
+        f.write(r'\includegraphics[width=0.9\textwidth]{' + vo_mikro + '}' + '\n')
         f.write(r'\end{figure}' + '\n')
            
     def writeVOAdditionalImagesPage(self, f, vo_dict):
