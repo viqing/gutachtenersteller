@@ -28,8 +28,9 @@ def writeReport():
     mo_dict['mikro'] = createStaticMap.createStaticHOMap(zoom='18',exportPath='ho_images', exportedImgName='ho-mikro.jpg')
     mo_dict['img'] = ['img/ho_images/img-0.png','img/ho_images/img-1.png','img/ho_images/img-2.png','img/ho_images/img-3.png','img/ho_images/img-4.png','img/ho_images/img-5.png',]
 
-    vo_dicts = createDictForObjects()
-    #TODO FORMAT PRICES NICELY
+    testInput = 'parsed-pyout.csv'
+    vo_dicts = createDictForObjects(testInput)
+
     f = open('py2texTest2.tex', 'w')
     writer = texWriter()
     writer.setupTexFilePackages(f)
@@ -51,7 +52,6 @@ def writeReport():
         if (i+1)%5==0 and (i+1)!=len(vo_dicts):
             bin_counter += 1
             vo_dict_5bin[str(bin_counter)] = {}
-    # LOOP THROUGH VO_DICT_BIN
     for bin_key, bin_dict in vo_dict_5bin.items():
         writer.writeCompareTable(f, mo_dict, bin_dict, bin_key, len(vo_dict_5bin)) 
 
@@ -87,7 +87,6 @@ def createDictForObjects(filename='output.csv'):
             for header, value in zip(headers, row):
                 objectsDict[header].append(value)
 
-    #TODO add makro and mikro images here already and dont call them in the latexwriter
     numberOfMaxAvailableImageLinks = sum('s_full_link' in key for key in objectsDict.keys())
     consolidatedObjectsDict = {}
     for i in range(len(objectsDict['double1group_id'])):
@@ -103,7 +102,6 @@ def createDictForObjects(filename='output.csv'):
         consolidatedObjectsDict[new_vo]['lat'] = objectsDict['s_lat'][i]
         consolidatedObjectsDict[new_vo]['lon'] = objectsDict['s_lon'][i]
 
-        #TODO implement Naherholung
         import createStaticMap
         # Distances
         location = [float(objectsDict['s_lat'][i]), float(objectsDict['s_lon'][i])]
@@ -123,11 +121,13 @@ def createDictForObjects(filename='output.csv'):
         consolidatedObjectsDict[new_vo]['rooms'] = objectsDict['s_nbrooms'][i]
         consolidatedObjectsDict[new_vo]['size'] = objectsDict['s_surface_usuable'][i]
         # Criteria for Equipment
+        # Available: te_a_balkon_oc,te_a_garten_oc,te_a_lift_oc,te_a_minergie_oc,te_a_ofen_oc,te_a_rollst_oc,te_a_sicht_oc,te_a_wasch_oc
+        equiptmentLUT = {'-1':'Unbekannt', '0':'Nicht vorhanden', '1':'Vorhanden', '2':'Vorhanden', '3':'Vorhanden', '4':'Vorhanden'}
         consolidatedObjectsDict[new_vo]['bath'] = 'tbd'
         consolidatedObjectsDict[new_vo]['kitchen'] = 'tbd'
-        consolidatedObjectsDict[new_vo]['balkon'] = 'tbd'
-        consolidatedObjectsDict[new_vo]['lift'] = 'tbd'
-        consolidatedObjectsDict[new_vo]['floor'] = 'tbd'
+        consolidatedObjectsDict[new_vo]['balkon'] = equiptmentLUT[objectsDict['te_a_balkon_oc'][i]]
+        consolidatedObjectsDict[new_vo]['lift'] = equiptmentLUT[objectsDict['te_a_lift_oc'][i]]
+        consolidatedObjectsDict[new_vo]['floor'] = objectsDict['te307o_floor_id'][i]
         # Year built
         consolidatedObjectsDict[new_vo]['year'] = objectsDict['s_construction_year'][i]
         # Description
@@ -173,7 +173,6 @@ def createDictForObjects(filename='output.csv'):
 
 def saveVOImageLocally(VOName, imgName, imgURL):
     #takes in the meta-sys server link and stores the image locally
-    #returns None if image cant be retrieved
     import os
     import urllib.request
     fullExportPath = ''.join(('img/','vo_images/', VOName, '/', imgName))
