@@ -1,35 +1,56 @@
 def writeReport():
     import createStaticMap
     import urllib
-    import dicttoxml
+    import urllib.parse
+    import json
+    import os
     from latexWriter import texWriter
 
-    #setup dict for main object
-    mo_dict = {}
-    mo_dict['street'] = 'Langstrasse 1234'
-    mo_dict['br_mo'] = '2000'
-    mo_dict['ext_mo'] = '400'
-    mo_dict['net_mo'] = '1600'
-    mo_dict['m2_pa'] = '322'
-    mo_dict['plz_city'] = '8004, Zürich'
-    mo_dict['d_school'] = '100m, 1min'
-    mo_dict['d_shop'] = '100m, 1min'
-    mo_dict['d_fun'] = '100m, 1min'
-    mo_dict['d_public'] = '100m, 1min'
-    mo_dict['rooms'] = '4.0'
-    mo_dict['size'] = '120m2'
-    mo_dict['bath'] = '1 Bad/WC'
-    mo_dict['kitchen'] = 'Offen'
-    mo_dict['balkon'] = 'Vorhanden'
-    mo_dict['lift'] = 'Vorhanden'
-    mo_dict['floor'] = '4. OG'
-    mo_dict['year'] = '1971'
-    mo_dict['makro'] = createStaticMap.createStaticHOMap(zoom='14',exportPath='ho_images', exportedImgName='ho-makro.jpg')
-    mo_dict['mikro'] = createStaticMap.createStaticHOMap(zoom='18',exportPath='ho_images', exportedImgName='ho-mikro.jpg')
-    mo_dict['img'] = ['img/ho_images/img-0.png','img/ho_images/img-1.png','img/ho_images/img-2.png','img/ho_images/img-3.png','img/ho_images/img-4.png','img/ho_images/img-5.png',]
+    # parse arguments
+    from argparse import ArgumentParser
+    parser = ArgumentParser()
+    parser.add_argument("-j", "--json-file", dest="jsonFile", nargs='?', const="report.json", type=str,
+                        help="Create report from specified json file. Defaults to report.json if no option provided.")
+    args = parser.parse_args()
+    print(vars(args))
 
-    testInput = 'parsed-pyout.csv'
-    vo_dicts = createDictForObjects(testInput)
+    #TODO finalise createVODictFromJson
+    if args.jsonFile:
+        jsonFileName = args.jsonFile
+        if not os.path.isfile(jsonFileName):
+            print('Specified XML file doesn\'t exist.')
+        else:
+            with open(jsonFileName) as fp:
+                inputDict = json.load(fp)
+                mo_dict = inputDict['mo']
+                vo_dicts = inputDict['vo']
+    else:
+        testInput = 'parsed-pyout.csv'
+        vo_dicts = createVODictFromCSV(testInput)
+
+        #setup dict for main object
+        mo_dict = {}
+        mo_dict['street'] = 'Langstrasse 1234'
+        mo_dict['br_mo'] = '2000'
+        mo_dict['ext_mo'] = '400'
+        mo_dict['net_mo'] = '1600'
+        mo_dict['m2_pa'] = '322'
+        mo_dict['plz_city'] = '8004, Zürich'
+        mo_dict['d_school'] = '100m, 1min'
+        mo_dict['d_shop'] = '100m, 1min'
+        mo_dict['d_fun'] = '100m, 1min'
+        mo_dict['d_public'] = '100m, 1min'
+        mo_dict['rooms'] = '4.0'
+        mo_dict['size'] = '120m2'
+        mo_dict['bath'] = '1 Bad/WC'
+        mo_dict['kitchen'] = 'Offen'
+        mo_dict['balkon'] = 'Vorhanden'
+        mo_dict['lift'] = 'Vorhanden'
+        mo_dict['floor'] = '4. OG'
+        mo_dict['year'] = '1971'
+        mo_dict['makro'] = createStaticMap.createStaticHOMap(zoom='14',exportPath='ho_images', exportedImgName='ho-makro.jpg')
+        mo_dict['mikro'] = createStaticMap.createStaticHOMap(zoom='18',exportPath='ho_images', exportedImgName='ho-mikro.jpg')
+        mo_dict['img'] = ['img/ho_images/img-0.png','img/ho_images/img-1.png','img/ho_images/img-2.png','img/ho_images/img-3.png','img/ho_images/img-4.png','img/ho_images/img-5.png',]
 
     f = open('py2texTest2.tex', 'w')
     writer = texWriter()
@@ -70,11 +91,10 @@ def writeReport():
     # Can later on be used to easily recreate existing reports
     joined_dict = {}
     joined_dict['mo'], joined_dict['vo'] = mo_dict, vo_dicts
-    xml = dicttoxml.dicttoxml(joined_dict, attr_type=False)
-    with open('report.xml', 'w') as joined_xml:
-        joined_xml.write(xml.decode())
+    with open('report.json', 'w') as fp:
+        json.dump(joined_dict, fp, indent=4)
 
-def createDictForObjects(filename='output.csv'):
+def createVODictFromCSV(filename='output.csv'):
 
     import csv
     with open(filename, 'rt') as objectCsvFile:
