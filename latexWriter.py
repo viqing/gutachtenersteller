@@ -95,7 +95,7 @@ class texWriter:
         f.write(r'\hline' + '\n')
         f.write(r'\rowcolor{gray} Lage \& Distanzen &\\' + '\n')
         f.write(r'\hline' + '\n')
-        f.write(r'Historisch/Administrativ & \cellcolor{lightgray}' + mo_dict['plz_city'] + r'\\' + '\n')
+        f.write(r'Historisch/Administrativ & \cellcolor{lightgray}' + mo_dict['plz'] + ', ' + mo_dict['city'] + r'\\' + '\n')
         f.write(r'\hline' + '\n')
         f.write(r'Schule & \cellcolor{lightgray}' + mo_dict['d_school'] + r'\\' + '\n')
         f.write(r'\hline' + '\n')
@@ -274,7 +274,7 @@ class texWriter:
         printStringList[13] =r'\hline' + '\n'
         printStringList[14] =r'\rowcolor{gray} Lage \& Distanzen & '
         printStringList[15] =r'\hline' + '\n'
-        printStringList[16] =r'Historisch/Administrativ & \cellcolor{lightgray} ' + mo_dict['plz_city']
+        printStringList[16] =r'Historisch/Administrativ & \cellcolor{lightgray} ' + mo_dict['plz'] + ', ' + mo_dict['city']
         printStringList[17] =r'\hline' + '\n'
         printStringList[18] =r'Schule & \cellcolor{lightgray} ' + mo_dict['d_school']
         printStringList[19] =r'\hline' + '\n'
@@ -393,7 +393,7 @@ class texWriter:
         f.write(r'\hline' + '\n')
         f.write(r'\rowcolor{gray} Lage \& Distanzen & &\\' + '\n')
         f.write(r'\hline' + '\n')
-        f.write(r'Historisch/Administrativ & \cellcolor{lightgray}' + mo_dict['plz_city'] + '&' + vo_dict['plz'] + ', ' + vo_dict['city'] + r'\\' + '\n')
+        f.write(r'Historisch/Administrativ & \cellcolor{lightgray}' + mo_dict['plz'] + ', ' + mo_dict['city'] + '&' + vo_dict['plz'] + ', ' + vo_dict['city'] + r'\\' + '\n')
         f.write(r'\hline' + '\n')
         f.write(r'Schule & \cellcolor{lightgray}' + mo_dict['d_school'] + '&' + vo_dict['d_school'] + r'\\' + '\n')
         f.write(r'\hline' + '\n')

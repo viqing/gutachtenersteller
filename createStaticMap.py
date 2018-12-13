@@ -33,14 +33,17 @@ def createStaticHOMap(zoom, exportedImgName, size='550x375', scale='2', maptype=
     img_format = ''.join(('&format=', img_format))
     marker = ''.join(('&markers=', address))
     zoom = ''.join(('&zoom=',zoom))
-    fullExportPath = ''.join(('img/', exportPath,'/',exportedImgName))
+    fullExportPath = ''.join((exportPath, '/', 'ho_images','/',exportedImgName))
     if not os.path.isfile(fullExportPath):
+        os.makedirs(os.path.dirname(fullExportPath), exist_ok=True) #create dir if file doesn't exist
         param_url = ''.join((url, size, marker, scale, maptype, img_format, zoom, key))
         urllib.request.urlretrieve(param_url, fullExportPath)
         print("Static mikro/makro image for HO created from {}\n Exported as {}.".format(param_url, fullExportPath))
     else:
         print("Static mikro/makro image for HO already exists as {}.\n".format(fullExportPath))
-    return fullExportPath
+    
+    relativeImageLink = fullExportPath[fullExportPath.find('img/'):]
+    return relativeImageLink
 
 def createStaticVOMakroMap(exportPath, voName, size='500x400', scale='2', maptype='hybrid',img_format='jpg', address1='Place+de+la+Gare+5A,+1003+Lausanne', address2='buelachstrasse+9g,zuerich,ch',exportedImgName='makro.jpg'):
     import urllib.request

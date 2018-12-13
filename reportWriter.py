@@ -15,12 +15,13 @@ def writeReport():
 
     #setup dict for main object
     mo_dict = {}
-    mo_dict['street'] = 'Langstrasse 1234'
+    mo_dict['street'] = 'Place de la Gare 5A'
     mo_dict['br_mo'] = '2000'
     mo_dict['ext_mo'] = '400'
     mo_dict['net_mo'] = '1600'
     mo_dict['m2_pa'] = '322'
-    mo_dict['plz_city'] = '8004, Zürich'
+    mo_dict['plz'] = '1003'
+    mo_dict['city'] = 'Lausanne'
     mo_dict['d_school'] = '100m, 1min'
     mo_dict['d_shop'] = '100m, 1min'
     mo_dict['d_fun'] = '100m, 1min'
@@ -33,8 +34,6 @@ def writeReport():
     mo_dict['lift'] = 'Vorhanden'
     mo_dict['floor'] = '4. OG'
     mo_dict['year'] = '1971'
-    mo_dict['makro'] = createStaticMap.createStaticHOMap(zoom='14',exportPath='ho_images', exportedImgName='ho-makro.jpg')
-    mo_dict['mikro'] = createStaticMap.createStaticHOMap(zoom='18',exportPath='ho_images', exportedImgName='ho-mikro.jpg')
     mo_dict['img'] = ['img/ho_images/img-0.png','img/ho_images/img-1.png','img/ho_images/img-2.png','img/ho_images/img-3.png','img/ho_images/img-4.png','img/ho_images/img-5.png',]
 
 
@@ -49,11 +48,15 @@ def writeReport():
         os.makedirs(generatedReportImgDirectory)
 
 
-    #TODO finalise createVODictFromJson
+    search_string = ','.join ((mo_dict['street'], mo_dict['plz'], mo_dict['city']))
+    search_string = urllib.parse.quote_plus(search_string) #parse so urls pose no problems in browsers
+    mo_dict['makro'] = createStaticMap.createStaticHOMap(address=search_string, zoom='14',exportPath=generatedReportImgDirectory, exportedImgName='ho-makro.jpg')
+    mo_dict['mikro'] = createStaticMap.createStaticHOMap(address=search_string, zoom='18',exportPath=generatedReportImgDirectory, exportedImgName='ho-mikro.jpg')
+
     if args.jsonFile:
         jsonFileName = args.jsonFile
         if not os.path.isfile(jsonFileName):
-            print('Specified XML file doesn\'t exist.')
+            print('Specified file doesn\'t exist.')
         else:
             with open(jsonFileName) as fp:
                 inputDict = json.load(fp)
