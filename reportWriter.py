@@ -12,7 +12,42 @@ def writeReport():
     parser.add_argument("-j", "--json-file", dest="jsonFile", nargs='?', const="report.json", type=str,
                         help="Create report from specified json file. Defaults to report.json if no option provided.")
     args = parser.parse_args()
-    print(vars(args))
+
+    #setup dict for main object
+    mo_dict = {}
+    mo_dict['street'] = 'Langstrasse 1234'
+    mo_dict['br_mo'] = '2000'
+    mo_dict['ext_mo'] = '400'
+    mo_dict['net_mo'] = '1600'
+    mo_dict['m2_pa'] = '322'
+    mo_dict['plz_city'] = '8004, Zürich'
+    mo_dict['d_school'] = '100m, 1min'
+    mo_dict['d_shop'] = '100m, 1min'
+    mo_dict['d_fun'] = '100m, 1min'
+    mo_dict['d_public'] = '100m, 1min'
+    mo_dict['rooms'] = '4.0'
+    mo_dict['size'] = '120m2'
+    mo_dict['bath'] = '1 Bad/WC'
+    mo_dict['kitchen'] = 'Offen'
+    mo_dict['balkon'] = 'Vorhanden'
+    mo_dict['lift'] = 'Vorhanden'
+    mo_dict['floor'] = '4. OG'
+    mo_dict['year'] = '1971'
+    mo_dict['makro'] = createStaticMap.createStaticHOMap(zoom='14',exportPath='ho_images', exportedImgName='ho-makro.jpg')
+    mo_dict['mikro'] = createStaticMap.createStaticHOMap(zoom='18',exportPath='ho_images', exportedImgName='ho-mikro.jpg')
+    mo_dict['img'] = ['img/ho_images/img-0.png','img/ho_images/img-1.png','img/ho_images/img-2.png','img/ho_images/img-3.png','img/ho_images/img-4.png','img/ho_images/img-5.png',]
+
+
+    generatedReportFilePath = ''.join((mo_dict['street'].replace(' ',''),'-GA'))
+    generatedReportFileName = ''.join((mo_dict['street'].replace(' ',''),'.tex'))
+
+    if not os.path.exists(generatedReportFilePath):
+        os.makedirs(generatedReportFilePath)
+
+    generatedReportImgDirectory = ''.join((generatedReportFilePath, '/', 'img'))
+    if not os.path.exists(generatedReportImgDirectory):
+        os.makedirs(generatedReportImgDirectory)
+
 
     #TODO finalise createVODictFromJson
     if args.jsonFile:
@@ -25,34 +60,11 @@ def writeReport():
                 mo_dict = inputDict['mo']
                 vo_dicts = inputDict['vo']
     else:
+        # set up dict for comparable objects
         testInput = 'parsed-pyout.csv'
-        vo_dicts = createVODictFromCSV(testInput)
+        vo_dicts = createVODictFromCSV(generatedReportImgDirectory,testInput)
 
-        #setup dict for main object
-        mo_dict = {}
-        mo_dict['street'] = 'Langstrasse 1234'
-        mo_dict['br_mo'] = '2000'
-        mo_dict['ext_mo'] = '400'
-        mo_dict['net_mo'] = '1600'
-        mo_dict['m2_pa'] = '322'
-        mo_dict['plz_city'] = '8004, Zürich'
-        mo_dict['d_school'] = '100m, 1min'
-        mo_dict['d_shop'] = '100m, 1min'
-        mo_dict['d_fun'] = '100m, 1min'
-        mo_dict['d_public'] = '100m, 1min'
-        mo_dict['rooms'] = '4.0'
-        mo_dict['size'] = '120m2'
-        mo_dict['bath'] = '1 Bad/WC'
-        mo_dict['kitchen'] = 'Offen'
-        mo_dict['balkon'] = 'Vorhanden'
-        mo_dict['lift'] = 'Vorhanden'
-        mo_dict['floor'] = '4. OG'
-        mo_dict['year'] = '1971'
-        mo_dict['makro'] = createStaticMap.createStaticHOMap(zoom='14',exportPath='ho_images', exportedImgName='ho-makro.jpg')
-        mo_dict['mikro'] = createStaticMap.createStaticHOMap(zoom='18',exportPath='ho_images', exportedImgName='ho-mikro.jpg')
-        mo_dict['img'] = ['img/ho_images/img-0.png','img/ho_images/img-1.png','img/ho_images/img-2.png','img/ho_images/img-3.png','img/ho_images/img-4.png','img/ho_images/img-5.png',]
-
-    f = open('py2texTest2.tex', 'w')
+    f = open(''.join((generatedReportFilePath, '/', generatedReportFileName)), 'w')
     writer = texWriter()
     writer.setupTexFilePackages(f)
     writer.writeTitlePage(f, mo_str='Langstrasse 123', mo_plz='8004', mo_rooms='4.0', mo_city='Zürich')
@@ -94,7 +106,7 @@ def writeReport():
     with open('report.json', 'w') as fp:
         json.dump(joined_dict, fp, indent=4)
 
-def createVODictFromCSV(filename='output.csv'):
+def createVODictFromCSV(generatedReportImgDirectory, filename='output.csv'):
 
     import csv
     with open(filename, 'rt') as objectCsvFile:
@@ -154,21 +166,27 @@ def createVODictFromCSV(filename='output.csv'):
         consolidatedObjectsDict[new_vo]['description'] = ' | '.join((objectsDict['s_title'][i],objectsDict['s_description'][i]))
 
         # Makro images
+        # TODO implement download functions to return relative img links!!!!!!!
         import urllib
         search_string = ','.join ((consolidatedObjectsDict[new_vo]['street'].split('(')[0], consolidatedObjectsDict[new_vo]['plz'], consolidatedObjectsDict[new_vo]['city']))
         search_string = urllib.parse.quote_plus(search_string) #parse so urls pose no problems in browsers
-        consolidatedObjectsDict[new_vo]['makro'] = createStaticMap.createStaticVOMakroMap(address2=search_string, exportPath=new_vo)
-        consolidatedObjectsDict[new_vo]['mikro'] = createStaticMap.createStaticVOMikroMap(address=search_string, exportPath=new_vo)
+        consolidatedObjectsDict[new_vo]['makro'] = createStaticMap.createStaticVOMakroMap(address2=search_string, exportPath=generatedReportImgDirectory, voName=new_vo)
+        consolidatedObjectsDict[new_vo]['mikro'] = createStaticMap.createStaticVOMikroMap(address=search_string, exportPath=generatedReportImgDirectory, voName=new_vo)
+
 
         # Download images and saving the export path in list
         consolidatedObjectsDict[new_vo]['img'] = []
         for j in range(numberOfMaxAvailableImageLinks):
+            voImgLocalLink = ''.join(('img-',str(j),'.png'))
+            fullExportPath = ''.join((generatedReportImgDirectory, '/', 'vo_images', '/', new_vo, '/', voImgLocalLink))
             if j==0:
+                imgURL = objectsDict['s_full_link'][i]
                 if objectsDict['s_full_link'][i] != 'NONE':
-                    consolidatedObjectsDict[new_vo]['img'].append(saveVOImageLocally(new_vo, ''.join(('img-',str(j),'.png')), objectsDict['s_full_link'][i]))
+                    consolidatedObjectsDict[new_vo]['img'].append(saveVOImageLocally(new_vo, fullExportPath, imgURL))
             else:
-                if objectsDict['_'.join(('s_full_link',str(j)))][i] != 'NONE':
-                    consolidatedObjectsDict[new_vo]['img'].append(saveVOImageLocally(new_vo, ''.join(('img-',str(j),'.png')), objectsDict['_'.join(('s_full_link',str(j)))][i]))
+                imgURL = objectsDict['_'.join(('s_full_link',str(j)))][i]
+                if imgURL != 'NONE':
+                    consolidatedObjectsDict[new_vo]['img'].append(saveVOImageLocally(new_vo, fullExportPath, imgURL))
 
     #Rename doppelte Strassennamen
     streetNames = list()
@@ -191,11 +209,10 @@ def createVODictFromCSV(filename='output.csv'):
 
     return consolidatedObjectsDict
 
-def saveVOImageLocally(VOName, imgName, imgURL):
+def saveVOImageLocally(VOName, fullExportPath, imgURL):
     #takes in the meta-sys server link and stores the image locally
     import os
     import urllib.request
-    fullExportPath = ''.join(('img/','vo_images/', VOName, '/', imgName))
     if not os.path.isfile(fullExportPath):
         os.makedirs(os.path.dirname(fullExportPath), exist_ok=True) #create dir if file doesn't exist
         try:
@@ -206,10 +223,12 @@ def saveVOImageLocally(VOName, imgName, imgURL):
             print('\n')
         else:
             print('Image file for {} was downloaded as {}.\n'.format(VOName, fullExportPath))
-            return ''.join(('img/', 'vo_images/', VOName, '/', imgName))
+            relativeImageLink = fullExportPath[fullExportPath.find('img/'):]
+            return relativeImageLink
     else:
         print('File already exists for {} under {}.\n'.format(VOName, fullExportPath))
-        return(fullExportPath)
+        relativeImageLink = fullExportPath[fullExportPath.find('img/'):]
+        return relativeImageLink
 
 if __name__=="__main__":
     writeReport()

@@ -42,7 +42,7 @@ def createStaticHOMap(zoom, exportedImgName, size='550x375', scale='2', maptype=
         print("Static mikro/makro image for HO already exists as {}.\n".format(fullExportPath))
     return fullExportPath
 
-def createStaticVOMakroMap(size='500x400', scale='2', maptype='hybrid',img_format='jpg', address1='Place+de+la+Gare+5A,+1003+Lausanne', address2='buelachstrasse+9g,zuerich,ch', exportPath='test', exportedImgName='makro.jpg'):
+def createStaticVOMakroMap(exportPath, voName, size='500x400', scale='2', maptype='hybrid',img_format='jpg', address1='Place+de+la+Gare+5A,+1003+Lausanne', address2='buelachstrasse+9g,zuerich,ch',exportedImgName='makro.jpg'):
     import urllib.request
     import os
 
@@ -62,8 +62,9 @@ def createStaticVOMakroMap(size='500x400', scale='2', maptype='hybrid',img_forma
     marker1 = ''.join(('&markers=', address1))
     marker2 = ''.join(('&markers=', address2))
 
-    fullExportPath = ''.join(('img/', 'vo_images/', exportPath, '/', exportedImgName))
+    fullExportPath = ''.join((exportPath, '/', 'vo_images', '/', voName, '/', exportedImgName))
     if not os.path.isfile(fullExportPath):
+        os.makedirs(os.path.dirname(fullExportPath), exist_ok=True) #create dir if file doesn't exist
         param_url = ''.join((url, size, marker1, marker2, scale, maptype, img_format, path, key))
         urllib.request.urlretrieve(param_url, fullExportPath)
         print("Static macro image created from {}\n Exported as {}.\n".format(param_url, fullExportPath))
@@ -92,9 +93,10 @@ def createStaticVOMakroMap(size='500x400', scale='2', maptype='hybrid',img_forma
     else:
         print("Static macro image already exists as {}.\n".format(fullExportPath))
 
-    return fullExportPath
+    relativeImageLink = fullExportPath[fullExportPath.find('img/'):]
+    return relativeImageLink
 
-def createStaticVOMikroMap(size='525x275', scale='2', maptype='hybrid',img_format='jpg', address='lagerstrasse+1,zuerich,ch',exportPath='test', exportedImgName='mikro.jpg'):
+def createStaticVOMikroMap(exportPath, voName, size='525x275', scale='2', maptype='hybrid',img_format='jpg', address='lagerstrasse+1,zuerich,ch', exportedImgName='mikro.jpg'):
     import urllib.request
     import os
 
@@ -112,14 +114,16 @@ def createStaticVOMikroMap(size='525x275', scale='2', maptype='hybrid',img_forma
     img_format = ''.join(('&format=', img_format))
     marker = ''.join(('&markers=', address))
 
-    fullExportPath = ''.join(('img/', 'vo_images/', exportPath, '/', exportedImgName))
+    fullExportPath = ''.join((exportPath, '/', 'vo_images/', voName, '/', exportedImgName))
     if not os.path.isfile(fullExportPath):
+        os.makedirs(os.path.dirname(fullExportPath), exist_ok=True) #create dir if file doesn't exist
         param_url = ''.join((url, size, marker, scale, maptype, img_format, zoom, key))
         urllib.request.urlretrieve(param_url, fullExportPath)
         print("Static mikro image created from {}\n Exported as {}.\n".format(param_url, fullExportPath))
     else:
         print("Static micro image already exists as {}.\n".format(fullExportPath))
-    return fullExportPath
+    relativeImageLink = fullExportPath[fullExportPath.find('img/'):]
+    return relativeImageLink
 
 def findLatLng(address):
 
@@ -162,7 +166,6 @@ def findClosestPlace(location=[47.401492, 8.547384], type='grocery_or_supermarke
 
     return nearestPlace
     
-
 def calculateDistance(point1, point2):
 
     import math    
