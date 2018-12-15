@@ -9,3 +9,8 @@ img
 *.pdf
 *.csv
 *.tex
+
+*.sql
+*.ini
+
+*-GA

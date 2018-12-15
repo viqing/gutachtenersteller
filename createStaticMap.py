@@ -21,7 +21,7 @@ def createStaticHOMap(zoom, exportedImgName, size='550x375', scale='2', maptype=
     import os
 
     #API Key and URL are static and should be chagned if needed
-    with open('api-key.txt', 'r') as api_file:
+    with open('api-key.txt', 'r', encoding='utf-8') as api_file:
         key = api_file.readline()
 
     key = ''.join(('&key=', key))
@@ -50,7 +50,7 @@ def createStaticVOMakroMap(exportPath, voName, size='500x400', scale='2', maptyp
     import os
 
     #API Key and URL are static and should be chagned if needed
-    with open('api-key.txt', 'r') as api_file:
+    with open('api-key.txt', 'r', encoding='utf-8') as api_file:
         key = api_file.readline()
 
     key = ''.join(('&key=', key))
@@ -104,7 +104,7 @@ def createStaticVOMikroMap(exportPath, voName, size='525x275', scale='2', maptyp
     import os
 
     #API Key and URL are static and should be chagned if needed
-    with open('api-key.txt', 'r') as api_file:
+    with open('api-key.txt', 'r', encoding='utf-8') as api_file:
         key = api_file.readline()
 
     key = ''.join(('&key=', key))
@@ -131,7 +131,7 @@ def createStaticVOMikroMap(exportPath, voName, size='525x275', scale='2', maptyp
 def findLatLng(address):
 
     #API Key and URL are static and should be chagned if needed
-    with open('api-key.txt', 'r') as api_file:
+    with open('api-key.txt', 'r', encoding='utf-8') as api_file:
         key = api_file.readline()
 
     key = ''.join(('&key=', key))
@@ -155,7 +155,7 @@ def findClosestPlace(location=[47.401492, 8.547384], type='grocery_or_supermarke
     # 'dist10m' - distance rounded to 10m
     # 'distWalkingTime' - walking time roughly calculated as 1min/100m 
 
-    with open('api-key.txt', 'r') as api_file:
+    with open('api-key.txt', 'r', encoding='utf-8') as api_file:
         key = api_file.readline()
     gmaps = googlemaps.Client(key=key)
     results = gmaps.places_nearby(location=location, type=type, rank_by='distance')
