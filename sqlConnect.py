@@ -20,7 +20,7 @@ def connect(sqlFile):
 
         outputquery = 'copy ({0}) to stdout with csv header'.format(sqlFile)
 
-        with open('pyout.csv', 'w') as f:
+        with open('pyout.csv', 'w', encoding='utf-8') as f:
             cur.copy_expert(outputquery, f)
 
      # close the communication with the PostgreSQL
@@ -35,6 +35,6 @@ def connect(sqlFile):
  
 if __name__ == '__main__':
     # Open and read the file as a single buffer
-    with open(f'standard_query.sql', 'r') as fd:
+    with open(f'hagenholzstr96.sql', 'r') as fd:
         sqlFile = fd.read()
         connect(sqlFile)

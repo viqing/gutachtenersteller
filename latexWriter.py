@@ -81,7 +81,7 @@ class texWriter:
         f.write(r'\setlength{\tabcolsep}{10pt}' + '\n')
         f.write(r'\begin{tabular}{ |p{\dimexpr 0.18\linewidth-2\tabcolsep}|p{\dimexpr 0.15\linewidth-2\tabcolsep}| } ' + '\n')
         f.write(r'\hline' + '\n')
-        f.write(r'\textbf{Adresse} & \cellcolor{lightgray}\textbf{' + mo_dict['street'] + r'}\\' + '\n')
+        f.write(r'\textbf{Adresse} & \cellcolor{lightgray}' + mo_dict['street'] + r'\\' + '\n')
         f.write(r'\hline' + '\n')
         f.write(r'\rowcolor{gray} Monatspreis (CHF) &\\ ' + '\n')
         f.write(r'\hline' + '\n')
@@ -140,10 +140,10 @@ class texWriter:
         f.write(r'\end{minipage}\hfill' + '\n')
         f.write(r'\begin{minipage}[t]{0.3\textwidth}' + '\n')
         f.write(r'\begin{itemize}' + '\n')
-        f.write(r'\item ÖV und Bahnhof in Gehdistanz' + '\n')
-        f.write(r'\item Schulen sind schnell erreichbar' + '\n')
-        f.write(r'\item Einkaufszentren nur wenige Minuten entfernt und ist nicht weit von Nachtclubs' + '\n')
-        f.write(r'\item Nahe gelegen an populären Einkaufszentren' + '\n')
+        
+        for description in mo_dict['description']['makro']:
+            f.write(r'\item ' + description + '\n')
+
         f.write(r'\end{itemize}' + '\n')
         f.write(r'\end{minipage}' + '\n')
         f.write(r'\end{figure}' + '\n')
@@ -158,10 +158,10 @@ class texWriter:
         f.write(r'\end{minipage}\hfill' + '\n')
         f.write(r'\begin{minipage}[t]{0.3\textwidth}' + '\n')
         f.write(r'\begin{itemize}' + '\n')
-        f.write(r'\item ÖV und Bahnhof in Gehdistanz' + '\n')
-        f.write(r'\item Schulen sind schnell erreichbar' + '\n')
-        f.write(r'\item Einkaufszentren nur wenige Minuten entfernt und ist nicht weit von Nachtclubs' + '\n')
-        f.write(r'\item Nahe gelegen an populären Einkaufszentren' + '\n')
+        
+        for description in mo_dict['description']['mikro']:
+            f.write(r'\item ' + description + '\n')
+
         f.write(r'\end{itemize}' + '\n')
         f.write(r'\end{minipage}' + '\n')
         f.write(r'\end{figure}' + '\n')
@@ -179,10 +179,10 @@ class texWriter:
         f.write(r'\end{minipage}\hfill' + '\n')
         f.write(r'\begin{minipage}[t]{0.3\textwidth}' + '\n')
         f.write(r'\begin{itemize}' + '\n')
-        f.write(r'\item ÖV und Bahnhof in Gehdistanz' + '\n')
-        f.write(r'\item Schulen sind schnell erreichbar' + '\n')
-        f.write(r'\item Einkaufszentren nur wenige Minuten entfernt und ist nicht weit von Nachtclubs' + '\n')
-        f.write(r'\item Nahe gelegen an populären Einkaufszentren' + '\n')
+        
+        for description in mo_dict['description']['equipment']:
+            f.write(r'\item ' + description + '\n')
+
         f.write(r'\end{itemize}' + '\n')
         f.write(r'\end{minipage}' + '\n')
         f.write(r'\end{figure}' + '\n')
@@ -260,7 +260,7 @@ class texWriter:
         printStringList = [None] * 48
         printStringList[0] =r'\begin{tabular}{ | p{\dimexpr 0.172\linewidth-2\tabcolsep} | p{\dimexpr 0.138\linewidth-2\tabcolsep} |'
         printStringList[1] =r'\hline' + '\n'
-        printStringList[2] =r'\textbf{Adresse} & \cellcolor{lightgray}\textbf{' + mo_dict['street'] + '}'
+        printStringList[2] =r'\textbf{Adresse} & \cellcolor{lightgray}' + mo_dict['street']
         printStringList[3] =r'\hline' + '\n'
         printStringList[4] =r'\rowcolor{gray} Monatspreis (CHF) & '
         printStringList[5] =r'\hline' + '\n'
@@ -309,7 +309,7 @@ class texWriter:
 
         for vo_dict in vo_dicts.values():
             printStringList[0] = ''.join((printStringList[0], r'p{\dimexpr 0.138\linewidth-2\tabcolsep} |'))
-            printStringList[2] = ''.join((printStringList[2],r' & \textbf{',vo_dict['street'], '}'))
+            printStringList[2] = ''.join((printStringList[2],r' & ',vo_dict['street']))
             printStringList[4] = ''.join((printStringList[4],' & '))
             printStringList[6] = ''.join((printStringList[6],' & ',self.formatCHFString(vo_dict['net_mo']),'.-'))
             printStringList[8] = ''.join((printStringList[8],' & ',vo_dict['ext_mo'],'.-'))
@@ -379,7 +379,7 @@ class texWriter:
         f.write(r'\setlength{\tabcolsep}{10pt}' + '\n')
         f.write(r'\begin{tabular}{ |l|l|l| } ' + '\n')
         f.write(r'\hline' + '\n')
-        f.write(r'\textbf{Adresse} & \cellcolor{lightgray}\textbf{' + mo_dict['street'] + r'}&\textbf{' + vo_dict['street'] + r'}\\' + '\n')
+        f.write(r'\textbf{Adresse} & \cellcolor{lightgray}' + mo_dict['street'] + r' & ' + vo_dict['street'] + r'\\' + '\n')
         f.write(r'\hline' + '\n')
         f.write(r'\rowcolor{gray} Monatspreis (CHF) & &\\ ' + '\n')
         f.write(r'\hline' + '\n')

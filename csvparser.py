@@ -37,7 +37,7 @@ def parseCSV(filename):
         headers.append("{}_{}".format("s_full_link", i+1))
 
     outputFileName = '-'.join(('parsed',filename))
-    with open(outputFileName, mode='w') as output_file:
+    with open(outputFileName, mode='w', newline='') as output_file:
         writer = csv.writer(output_file, delimiter=',', quotechar='"', quoting=csv.QUOTE_ALL)
         writer.writerow(headers)
         for objectID, attributes in objects.items():

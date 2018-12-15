@@ -4,6 +4,7 @@ def writeReport():
     import urllib.parse
     import json
     import os
+    from shutil import copyfile
     from latexWriter import texWriter
 
     # parse arguments
@@ -15,19 +16,19 @@ def writeReport():
 
     #setup dict for main object
     mo_dict = {}
-    mo_dict['street'] = 'Place de la Gare 5A'
-    mo_dict['br_mo'] = '2000'
-    mo_dict['ext_mo'] = '400'
-    mo_dict['net_mo'] = '1600'
+    mo_dict['street'] = 'Hagenholzstrasse 96'
+    mo_dict['br_mo'] = '3048'
+    mo_dict['ext_mo'] = '218'
+    mo_dict['net_mo'] = '2767'
     mo_dict['m2_pa'] = '322'
-    mo_dict['plz'] = '1003'
-    mo_dict['city'] = 'Lausanne'
+    mo_dict['plz'] = '8050'
+    mo_dict['city'] = 'Zürich'
     mo_dict['d_school'] = '100m, 1min'
     mo_dict['d_shop'] = '100m, 1min'
     mo_dict['d_fun'] = '100m, 1min'
     mo_dict['d_public'] = '100m, 1min'
-    mo_dict['rooms'] = '4.0'
-    mo_dict['size'] = '120m2'
+    mo_dict['rooms'] = '5.5'
+    mo_dict['size'] = '135m2'
     mo_dict['bath'] = '1 Bad/WC'
     mo_dict['kitchen'] = 'Offen'
     mo_dict['balkon'] = 'Vorhanden'
@@ -35,6 +36,11 @@ def writeReport():
     mo_dict['floor'] = '4. OG'
     mo_dict['year'] = '1971'
     mo_dict['img'] = ['img/ho_images/img-0.png','img/ho_images/img-1.png','img/ho_images/img-2.png','img/ho_images/img-3.png','img/ho_images/img-4.png','img/ho_images/img-5.png',]
+
+    mo_dict['description'] = {}
+    mo_dict['description']['makro'] = ['Zentrale Lage in Zürich', 'ÖV nahe gelegen', 'Fussdistanz zu mehreren Einkaufszentren']
+    mo_dict['description']['mikro'] = ['Ruhige Lage', 'Wenig befahrene Quartiersstrasse', 'Kinderfreundliche']
+    mo_dict['description']['equipment'] = ['Sonnige Küche', 'Fischgratparkett im Wohnbereich', 'Balkone südlich gewandt']
 
 
     generatedReportFilePath = ''.join((mo_dict['street'].replace(' ',''),'-GA'))
@@ -47,6 +53,9 @@ def writeReport():
     if not os.path.exists(generatedReportImgDirectory):
         os.makedirs(generatedReportImgDirectory)
 
+    # move logos to img folder
+    copyfile('img/hwz-logo.png', ''.join((generatedReportImgDirectory, '/', 'hwz-logo.png')))
+    copyfile('img/swissrei-logo.png', ''.join((generatedReportImgDirectory, '/', 'swissrei-logo.png')))
 
     search_string = ','.join ((mo_dict['street'], mo_dict['plz'], mo_dict['city']))
     search_string = urllib.parse.quote_plus(search_string) #parse so urls pose no problems in browsers
@@ -65,7 +74,7 @@ def writeReport():
     else:
         # set up dict for comparable objects
         testInput = 'parsed-pyout.csv'
-        vo_dicts = createVODictFromCSV(generatedReportImgDirectory,testInput)
+        vo_dicts = createVODictFromCSV(mo_dict,generatedReportImgDirectory,testInput)
 
     f = open(''.join((generatedReportFilePath, '/', generatedReportFileName)), 'w')
     writer = texWriter()
@@ -109,7 +118,7 @@ def writeReport():
     with open('report.json', 'w') as fp:
         json.dump(joined_dict, fp, indent=4)
 
-def createVODictFromCSV(generatedReportImgDirectory, filename='output.csv'):
+def createVODictFromCSV(mo_dict, generatedReportImgDirectory, filename='output.csv'):
 
     import csv
     with open(filename, 'rt') as objectCsvFile:
@@ -157,7 +166,7 @@ def createVODictFromCSV(generatedReportImgDirectory, filename='output.csv'):
         consolidatedObjectsDict[new_vo]['size'] = objectsDict['s_surface_usuable'][i]
         # Criteria for Equipment
         # Available: te_a_balkon_oc,te_a_garten_oc,te_a_lift_oc,te_a_minergie_oc,te_a_ofen_oc,te_a_rollst_oc,te_a_sicht_oc,te_a_wasch_oc
-        equiptmentLUT = {'-1':'Unbekannt', '0':'Nicht vorhanden', '1':'Vorhanden', '2':'Vorhanden', '3':'Vorhanden', '4':'Vorhanden'}
+        equiptmentLUT = {'-1':'Unbekannt', '0':'Nicht vorhanden', '1':'Vorhanden', '2':'Vorhanden', '3':'Vorhanden', '4':'Vorhanden', '5':'Vorhanden'}
         consolidatedObjectsDict[new_vo]['bath'] = 'tbd'
         consolidatedObjectsDict[new_vo]['kitchen'] = 'tbd'
         consolidatedObjectsDict[new_vo]['balkon'] = equiptmentLUT[objectsDict['te_a_balkon_oc'][i]]
@@ -171,9 +180,11 @@ def createVODictFromCSV(generatedReportImgDirectory, filename='output.csv'):
         # Makro images
         # TODO implement download functions to return relative img links!!!!!!!
         import urllib
+        mo_search_string = ','.join ((mo_dict['street'], mo_dict['plz'], mo_dict['city']))
+        mo_search_string = urllib.parse.quote_plus(mo_search_string) #parse so urls pose no problems in browsers
         search_string = ','.join ((consolidatedObjectsDict[new_vo]['street'].split('(')[0], consolidatedObjectsDict[new_vo]['plz'], consolidatedObjectsDict[new_vo]['city']))
         search_string = urllib.parse.quote_plus(search_string) #parse so urls pose no problems in browsers
-        consolidatedObjectsDict[new_vo]['makro'] = createStaticMap.createStaticVOMakroMap(address2=search_string, exportPath=generatedReportImgDirectory, voName=new_vo)
+        consolidatedObjectsDict[new_vo]['makro'] = createStaticMap.createStaticVOMakroMap(address1=mo_search_string, address2=search_string, exportPath=generatedReportImgDirectory, voName=new_vo)
         consolidatedObjectsDict[new_vo]['mikro'] = createStaticMap.createStaticVOMikroMap(address=search_string, exportPath=generatedReportImgDirectory, voName=new_vo)
 
 
