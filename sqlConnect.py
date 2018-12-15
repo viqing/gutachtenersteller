@@ -1,3 +1,4 @@
+
 import psycopg2
 from sqlConfig import config
  
@@ -13,12 +14,14 @@ def connect(sqlFile):
         conn = psycopg2.connect(**params)
  
         # create a cursor
+        print('Creating cursor object...')
         cur = conn.cursor()
         
  # execute a statement
         # cur.execute(sqlFile)
 
         outputquery = 'copy ({0}) to stdout with csv header'.format(sqlFile)
+        print(outputquery)
 
         with open('pyout.csv', 'w', encoding='utf-8') as f:
             cur.copy_expert(outputquery, f)

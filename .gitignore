@@ -12,3 +12,5 @@ img
 
 *.sql
 *.ini
+
+*-GA
