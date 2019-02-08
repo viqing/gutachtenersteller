@@ -7,42 +7,19 @@ def writeReport():
     from shutil import copyfile
     from latexWriter import texWriter
 
-    # parse arguments
+    # parse arguments to check for report json file
     from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument("-j", "--json-file", dest="jsonFile", nargs='?', const="report.json", type=str,
                         help="Create report from specified json file. Defaults to report.json if no option provided.")
     args = parser.parse_args()
 
-    #setup dict for main object
-    mo_dict = {}
-    mo_dict['street'] = 'Hagenholzstrasse 96'
-    mo_dict['br_mo'] = '3048'
-    mo_dict['ext_mo'] = '281'
-    mo_dict['net_mo'] = '2767'
-    mo_dict['m2_pa'] = '100'
-    mo_dict['plz'] = '8055'
-    mo_dict['city'] = 'Zürich'
-    mo_dict['d_school'] = '100m, 1min'
-    mo_dict['d_shop'] = '100m, 1min'
-    mo_dict['d_fun'] = '100m, 1min'
-    mo_dict['d_public'] = '100m, 1min'
-    mo_dict['rooms'] = '5.5'
-    mo_dict['size'] = '135m2'
-    mo_dict['bath'] = '1 Bad/WC, DU/WC'
-    mo_dict['kitchen'] = 'Offen'
-    mo_dict['balkon'] = 'Vorhanden'
-    mo_dict['lift'] = 'Vorhanden'
-    mo_dict['floor'] = '2. OG'
-    mo_dict['year'] = '1985'
-    mo_dict['img'] = ['img/ho_images/img-0.png','img/ho_images/img-1.png','img/ho_images/img-2.png','img/ho_images/img-3.png','img/ho_images/img-4.png','img/ho_images/img-5.png',]
+    # importing the mo_dict from input json file
+    with open('input.json', encoding='utf-8') as fp:
+                inputDict = json.load(fp)
+                mo_dict = inputDict['mo']
 
-    mo_dict['description'] = {}
-    mo_dict['description']['makro'] = ['Zentrale Lage in Zürich', 'ÖV nahe gelegen', 'Fussdistanz zu mehreren Einkaufszentren']
-    mo_dict['description']['mikro'] = ['Ruhige Lage', 'Wenig befahrene Quartiersstrasse', 'Kinderfreundliche']
-    mo_dict['description']['equipment'] = ['Sonnige Küche', 'Fischgratparkett im Wohnbereich', 'Balkone südlich gewandt']
-
-
+    # create folder and file name for report
     generatedReportFilePath = ''.join((mo_dict['street'].replace(' ',''),'-GA'))
     generatedReportFileName = ''.join((mo_dict['street'].replace(' ',''),'.tex'))
 
@@ -57,11 +34,16 @@ def writeReport():
     copyfile('img/hwz-logo.png', ''.join((generatedReportImgDirectory, '/', 'hwz-logo.png')))
     copyfile('img/swissrei-logo.png', ''.join((generatedReportImgDirectory, '/', 'swissrei-logo.png')))
 
+    # write sql query
+    moSQLFile = writeSQLQuery(generatedReportFilePath, mo_dict)
+
+    # parse street name of mo to create makro/mikro maps
     search_string = ','.join ((mo_dict['street'], mo_dict['plz'], mo_dict['city']))
     search_string = urllib.parse.quote_plus(search_string) #parse so urls pose no problems in browsers
     mo_dict['makro'] = createStaticMap.createStaticHOMap(address=search_string, zoom='14',exportPath=generatedReportImgDirectory, exportedImgName='ho-makro.jpg')
     mo_dict['mikro'] = createStaticMap.createStaticHOMap(address=search_string, zoom='18',exportPath=generatedReportImgDirectory, exportedImgName='ho-mikro.jpg')
 
+    # create mo and vo dict
     if args.jsonFile:
         jsonFileName = args.jsonFile
         if not os.path.isfile(jsonFileName):
@@ -79,7 +61,7 @@ def writeReport():
     f = open(''.join((generatedReportFilePath, '/', generatedReportFileName)), 'w', encoding='utf-8')
     writer = texWriter()
     writer.setupTexFilePackages(f)
-    writer.writeTitlePage(f, mo_str='Langstrasse 123', mo_plz='8004', mo_rooms='4.0', mo_city='Zürich')
+    writer.writeTitlePage(f, mo_dict)
     writer.writeTOC(f)
     writer.writeHOTablePage(f, mo_dict)
     writer.writeHOMakroPage(f, mo_dict)
@@ -134,6 +116,8 @@ def createVODictFromCSV(mo_dict, generatedReportImgDirectory, filename='output.c
     numberOfMaxAvailableImageLinks = sum('s_full_link' in key for key in objectsDict.keys())
     consolidatedObjectsDict = {}
     for i in range(len(objectsDict['double1group_id'])):
+        print("\n({}/{}) Setting up the dict and images for {}...".format(i+1, len(objectsDict['double1group_id']), objectsDict['s_street'][i]))
+
         new_vo = ''.join(('vo_', str(i+1)))
         consolidatedObjectsDict[new_vo] = {}
         consolidatedObjectsDict[new_vo]['street'] = objectsDict['s_street'][i]
@@ -191,16 +175,22 @@ def createVODictFromCSV(mo_dict, generatedReportImgDirectory, filename='output.c
         # Download images and saving the export path in list
         consolidatedObjectsDict[new_vo]['img'] = []
         for j in range(numberOfMaxAvailableImageLinks):
-            voImgLocalLink = ''.join(('img-',str(j),'.png'))
-            fullExportPath = ''.join((generatedReportImgDirectory, '/', 'vo_images', '/', new_vo, '/', voImgLocalLink))
+            voImgName = ''.join(('img-',str(j),'.png'))
+            fullExportPath = ''.join((generatedReportImgDirectory, '/', 'vo_images', '/', new_vo, '/', voImgName))
             if j==0:
                 imgURL = objectsDict['s_full_link'][i]
-                if objectsDict['s_full_link'][i] != 'NONE':
-                    consolidatedObjectsDict[new_vo]['img'].append(saveVOImageLocally(new_vo, fullExportPath, imgURL))
+                if imgURL != 'NONE':
+                    locallySavedImageRelativePath = saveVOImageLocally(new_vo, fullExportPath, imgURL)
+                    if locallySavedImageRelativePath:
+                        resizeImage(fullExportPath)
+                        consolidatedObjectsDict[new_vo]['img'].append(locallySavedImageRelativePath)
             else:
                 imgURL = objectsDict['_'.join(('s_full_link',str(j)))][i]
                 if imgURL != 'NONE':
-                    consolidatedObjectsDict[new_vo]['img'].append(saveVOImageLocally(new_vo, fullExportPath, imgURL))
+                    locallySavedImageRelativePath = saveVOImageLocally(new_vo, fullExportPath, imgURL)
+                    if locallySavedImageRelativePath:
+                        resizeImage(fullExportPath)
+                        consolidatedObjectsDict[new_vo]['img'].append(locallySavedImageRelativePath)
 
     #Rename doppelte Strassennamen
     streetNames = list()
@@ -232,18 +222,51 @@ def saveVOImageLocally(VOName, fullExportPath, imgURL):
         try:
             urllib.request.urlretrieve(imgURL, fullExportPath)
         except Exception as e:
-            print('Could not access file through link. Exception:\n')
+            print('Could not access file through link:')
             print(e)
-            print('\n')
         else:
-            print('Image file for {} was downloaded as {}.\n'.format(VOName, fullExportPath))
+            print('Image file for {} was downloaded as {}.'.format(VOName, fullExportPath))
             relativeImageLink = fullExportPath[fullExportPath.find('img/'):]
             return relativeImageLink
     else:
-        print('File already exists for {} under {}.\n'.format(VOName, fullExportPath))
+        print('File already exists for {} under {}.'.format(VOName, fullExportPath))
         relativeImageLink = fullExportPath[fullExportPath.find('img/'):]
         return relativeImageLink
 
+def resizeImage(imageLink):
+    from PIL import Image
+    im = Image.open(imageLink)
+
+    aspectRatio = im.width / im.height
+    im = im.resize((int(im.height * aspectRatio), 640))
+    
+    im.save(imageLink)
+
+def writeSQLQuery(targetFolder, mo_dict):
+    sqlFile = ''.join((targetFolder, '/', 'sql-', mo_dict['street'].replace(' ',''),'.sql'))
+    with open(sqlFile, 'w', encoding='utf-8') as fp:
+        fp.write(r"""SELECT srei_ads.*,ftta_199a1_adds_housing.te_a_balkon_oc, ftta_199a1_adds_housing.te_a_lift_oc, ftta_199a1_adds_housing.te307o_floor_id, 'https://s3-eu-west-1.amazonaws.com/' || fto_199a3_images.amazonpath AS 's_full_link' """ + '\n')
+        fp.write(r"""FROM srei_ads LEFT OUTER JOIN ftta_199a1_adds_housing	ON srei_ads.id = ftta_199a1_adds_housing.id LEFT OUTER JOIN fto_199a3_images ON srei_ads.id = fto_199a3_images.ft_199a3_add_housing_id""" + '\n')
+        fp.write(r"""WHERE""" + '\n')
+        # Bruttomiete
+        fp.write(r"""srei_ads.s_zip=1004 AND""" + '\n')
+        # Zimmer
+        if float(mo_dict['rooms']) <= 3.0:
+            fp.write(r"""srei_ads.s_nbrooms=""" + mo_dict['rooms'] + """ AND""" + '\n')
+        elif float(mo_dict['rooms']) <=4.5:
+            fp.write(r"""(srei_ads.s_nbrooms BETWEEN """ + str(float(mo_dict['rooms'])-0.5) + """ AND """ + str(float(mo_dict['rooms'])+0.5) + """) AND """ + '\n')
+        else:
+            fp.write(r"""(srei_ads.s_nbrooms BETWEEN """ + str(float(mo_dict['rooms'])-1.0) + """ AND """ + str(float(mo_dict['rooms'])+1.0) + """) AND """ + '\n')
+        fp.write(r"""srei_ads.s_grossrent>=""" + mo_dict['br_mo'] + """AND""")
+        # Baujahr
+        fp.write(r"""(srei_ads.s_construction_year BETWEEN """ + str(float(mo_dict['year'])-20) + """ AND """ + str(float(mo_dict['year'])+20) + """) AND """ + '\n')
+        # Wohnraum
+        fp.write(r"""(srei_ads.s_construction_year BETWEEN """ + str(float(mo_dict['size'])*0.8) + """ AND """ + str(float(mo_dict['size'])*1.2) + """) AND """ + '\n')
+        # Nicht leer
+        fp.write(r"""srei_ads.s_street IS NOT NULL AND""" + '\n')
+        fp.write(r"""srei_ads.s_netrent IS NOT NULL""" + '\n')
+    print('Created SQL query file under {}.'.format(sqlFile))
+    return sqlFile
+
 if __name__=="__main__":
     writeReport()
-    #createDictForObjects()

@@ -58,13 +58,13 @@ class texWriter:
 
         f.write(r'\pagestyle{plain}' + '\n')
 
-    def writeTitlePage(self, f, mo_str='abcd', mo_plz='1234', mo_rooms='4.0', mo_city='abcity'):
+    def writeTitlePage(self, f, mo_dict):
         f.write(r'\begin{document}' + '\n')
         f.write(r'\vspace*{5cm}\noindent{\YUGE \underline{Gutachten zur Orts- oder Quartierüblichkeit}} \\' + '\n\n')
             
-        f.write(r'\vspace{1cm} \noindent ' + mo_str + r'\\' + '\n')
-        f.write(mo_rooms + ' Zimmer' + r'\\' + '\n')
-        f.write(mo_plz + ' ' + mo_city + r'\\' + '\n')
+        f.write(r'\vspace{1cm} \noindent ' + mo_dict['street'] + r'\\' + '\n')
+        f.write(mo_dict['rooms'] + ' Zimmer' + r'\\' + '\n')
+        f.write(mo_dict['plz'] + ' ' + mo_dict['city'] + r'\\' + '\n')
 
     def writeTOC(self, f):
         f.write(r'\clearpage' + '\n')
