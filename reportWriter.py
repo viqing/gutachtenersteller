@@ -1,14 +1,15 @@
+import createStaticMap
+import urllib
+import urllib.parse
+import json
+import os
+from shutil import copyfile
+from latexWriter import texWriter
+from argparse import ArgumentParser
+
 def writeReport():
-    import createStaticMap
-    import urllib
-    import urllib.parse
-    import json
-    import os
-    from shutil import copyfile
-    from latexWriter import texWriter
 
     # parse arguments to check for report json file
-    from argparse import ArgumentParser
     parser = ArgumentParser()
     parser.add_argument("-j", "--json-file", dest="jsonFile", nargs='?', const="report.json", type=str,
                         help="Create report from specified json file. Defaults to report.json if no option provided.")
